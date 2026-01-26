@@ -1,8 +1,8 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import { NAV_ITEMS } from "../../constants/navigation";
-// import { NAV_ITEMS } from "../../constants/navigation";
+import { assets } from "../../assets/assets";
 
 const Sidebar = ({ isOpen, onClose }) => {
   return (
@@ -23,7 +23,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between px-4 h-16 border-b">
           <h2 className="text-lg font-bold">
-            Logo<span className="text-primary">here</span>
+            <Link to="/" onClick={onClose}>
+              <img className="w-40 h-auto" src={assets.logo} alt="Logo" />
+            </Link>
           </h2>
           <button
             onClick={onClose}

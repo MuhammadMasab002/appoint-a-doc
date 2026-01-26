@@ -91,11 +91,11 @@ const SignUp = () => {
   };
 
   return (
-    <div className="w-full min-h-screen grid grid-cols-1">
-      <div className="flex items-center justify-center py-10 px-6">
-        <div className="w-full max-w-md">
-          <h2 className="text-4xl font-bold text-left text-black mb-8">
-            Create an Account
+    <div className="w-full min-h-screen">
+      <div className="flex justify-center mt-10">
+        <div className="w-full max-w-md py-10 px-6 shadow-lg rounded-lg">
+          <h2 className="text-3xl sm:text-4xl font-bold text-left text-black mb-5 sm:mb-8">
+            Create Account
           </h2>
           <p className="text-left text-black mb-6">Enter your details below</p>
 

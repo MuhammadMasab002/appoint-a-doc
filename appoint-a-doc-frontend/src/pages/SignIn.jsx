@@ -77,11 +77,11 @@ const SignIn = () => {
   };
 
   return (
-    <div className="w-full min-h-screen grid grid-cols-1">
-      <div className="flex items-center justify-center py-10 px-6">
-        <div className="w-full max-w-md">
-          <h2 className="text-4xl font-bold text-left text-black mb-8">
-            Login to Website name.
+    <div className="w-full min-h-screen">
+      <div className="flex justify-center mt-20">
+        <div className="w-full max-w-md  py-10 px-6 shadow-lg rounded-lg">
+          <h2 className="text-3xl sm:text-4xl font-bold text-left text-black mb-5 sm:mb-8">
+            Login
           </h2>
 
           <p className="text-left text-black mb-6">Enter your details below</p>
@@ -118,13 +118,29 @@ const SignIn = () => {
               variant={BUTTON_VARIANTS.PRIMARY}
             />
 
-            <CustomButton
-              text="Forget Password?"
-              type="button"
-              variant={BUTTON_VARIANTS.TEXT_PRIMARY}
-              onClick={() => alert("Forget Password clicked")}
-              fullWidth={false}
-            />
+            <div className="flex justify-center items-center gap-2 mt-4">
+              <p className="text-center text-gray-600">
+                Don't have an account?
+              </p>
+              <CustomButton
+                text="Sign Up"
+                type="button"
+                variant={BUTTON_VARIANTS.TEXT_PRIMARY}
+                className="!py-0 !px-1"
+                fullWidth={false}
+                onClick={() => navigate("/signup")}
+              />
+            </div>
+            <div className="flex justify-center">
+              <CustomButton
+                text="Forget Password?"
+                type="button"
+                variant={BUTTON_VARIANTS.TEXT_PRIMARY}
+                onClick={() => alert("Forget Password clicked")}
+                fullWidth={false}
+                className="py-0!"
+              />
+            </div>
           </form>
         </div>
       </div>
