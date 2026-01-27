@@ -28,15 +28,20 @@ const HeroSection = () => {
 
             {/* CTA Button */}
             <div className="w-full flex justify-center md:justify-start mt-1 md:mt-2">
-              <Link
-                to="/all-doctors"
-                className="inline-flex items-center gap-2 bg-white px-6 md:px-8 py-3 rounded-full hover:bg-gray-100 transition-colors duration-300"
+              <div
+                onClick={() =>
+                  scrollTo({
+                    top: document.getElementById("TopDoctorsSection").offsetTop,
+                    behavior: "smooth",
+                  })
+                }
+                className="inline-flex items-center gap-2 cursor-pointer bg-white px-6 md:px-8 py-3 rounded-full hover:bg-gray-100 transition-colors duration-300"
               >
                 <span className="text-sm md:text-base text-blue-600 font-semibold">
                   Book appointment
                 </span>
                 <ArrowForwardIcon fontSize="small" />
-              </Link>
+              </div>
             </div>
           </div>
 

@@ -1,7 +1,9 @@
 import React from "react";
 import { specialityData } from "../../assets/assets";
+import { useNavigate } from "react-router-dom";
 
 const SpecialitySection = () => {
+  const navigate = useNavigate();
   return (
     <section className="w-full py-14 md:py-16">
       <div className="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
@@ -17,6 +19,9 @@ const SpecialitySection = () => {
           {specialityData.map((item) => (
             <div
               key={item.speciality}
+              onClick={() => {
+                navigate("/doctors/" + item.speciality);
+              }}
               className="flex flex-col items-center gap-1 hover:scale-105 transition-transform cursor-pointer"
             >
               <div className="w-16 sm:w-24 rounded-full bg-gray-100 flex items-center justify-center shadow-sm">

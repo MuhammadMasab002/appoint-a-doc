@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import CustomFormInput, { INPUT_TYPES } from "../common/inputs/CustomFormInput";
 
 import SearchIcon from "@mui/icons-material/Search";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -12,7 +10,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { NAV_ITEMS } from "../../constants/navigation";
 import Sidebar from "./Sidebar";
 import { assets } from "../../assets/assets";
-import { logout } from "../../services/store/slices/authSlice";
 
 const Header = () => {
   const [search, setSearch] = useState("");
@@ -21,8 +18,7 @@ const Header = () => {
   const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+  const user = null;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -37,7 +33,7 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    dispatch(logout());
+    // logout api call can be added here
     setIsDropdownOpen(false);
     navigate("/signin");
   };

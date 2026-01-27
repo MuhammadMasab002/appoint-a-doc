@@ -17,11 +17,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full w-72 bg-white z-50
-        transform transition-transform duration-300
+        transform transition-transform duration-300 overflow-y-auto
         ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 h-16 border-b">
+        <div className="flex items-center justify-between px-4 h-16 border-b sticky top-0 bg-white">
           <h2 className="text-lg font-bold">
             <Link to="/" onClick={onClose}>
               <img className="w-40 h-auto" src={assets.logo} alt="Logo" />

@@ -1,11 +1,14 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { doctors } from "../../assets/assets";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { AppContext } from "../../services/context/AppContext";
 
 const TopDoctorsSection = () => {
+  const navigate = useNavigate();
+  const { doctors } = useContext(AppContext);
+
   return (
-    <section className="w-full py-14 md:py-16">
+    <section id="TopDoctorsSection" className="w-full py-14 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
@@ -59,13 +62,17 @@ const TopDoctorsSection = () => {
 
         {/* Show More Button */}
         <div className="flex justify-center">
-          <Link
-            to="/all-doctors"
+          <button
+            type="button"
+            onClick={() => {
+              navigate("/doctors");
+              scrollTo(0, 0);
+            }}
             className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-200 transition-colors duration-300"
           >
             Show More
             <ArrowForwardIcon fontSize="small" />
-          </Link>
+          </button>
         </div>
       </div>
     </section>

@@ -1,8 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 
 const CTASection = () => {
+  const navigate = useNavigate();
   return (
     <section className="w-full mt-6">
       <div className="relative bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl">
@@ -17,12 +18,15 @@ const CTASection = () => {
               </h2>
 
               {/* CTA Button */}
-              <Link
-                to="/signup"
+              <button
+                onClick={() => {
+                  navigate("/signup");
+                  scrollTo(0, 0);
+                }}
                 className="inline-block bg-white text-blue-600 text-sm md:text-base px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 mt-2"
               >
                 Create Account
-              </Link>
+              </button>
             </div>
 
             {/* Right Image */}
