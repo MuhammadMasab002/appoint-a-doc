@@ -23,7 +23,7 @@ const CTASection = () => {
                   navigate("/signup");
                   scrollTo(0, 0);
                 }}
-                className="inline-block bg-white text-blue-600 text-sm md:text-base px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 mt-2"
+                className="inline-block bg-white text-blue-600 text-sm md:text-base px-8 py-3 rounded-full cursor-pointer font-semibold hover:bg-gray-100 transition-colors duration-300 mt-2"
               >
                 Create Account
               </button>

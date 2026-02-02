@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Doctors from "./pages/Doctors";
+import Appointment from "./pages/Appointment";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
 
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctors/:speciality" element={<Doctors />} />
+
+          <Route path="/appointment/:doc_id" element={<Appointment />} />
 
           <Route path="/login" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
