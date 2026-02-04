@@ -9,7 +9,14 @@ const Appointment = () => {
   const { doc_id } = useParams();
   const navigate = useNavigate();
   const { doctors } = useContext(AppContext);
-  const [selectedDate, setSelectedDate] = useState(null);
+  
+  // Initialize selectedDate with today's date
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+  
+  const [selectedDate, setSelectedDate] = useState(getTodayDate());
   const [selectedTime, setSelectedTime] = useState(null);
 
   // Find the doctor by ID
@@ -48,7 +55,7 @@ const Appointment = () => {
   // Generate next 7 days
   const getDaysArray = () => {
     const days = [];
-    const dayNames = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     for (let i = 0; i < 7; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
