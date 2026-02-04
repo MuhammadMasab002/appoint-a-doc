@@ -8,6 +8,7 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import Doctors from "./pages/Doctors";
 import Appointment from "./pages/Appointment";
 import MyProfile from "./pages/MyProfile";
+import MyAppointments from "./pages/MyAppointments";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/appointment/:doc_id" element={<Appointment />} />
 
           <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/my-appointments" element={<MyAppointments />} />
 
           <Route path="/login" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
