@@ -88,8 +88,8 @@ const MyAppointments = () => {
               <div className="p-6 sm:p-8">
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* Doctor Image */}
-                  <div className="flex-shrink-0">
-                    <div className="w-32 h-32 sm:w-36 sm:h-36 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl overflow-hidden">
+                  <div className="shrink-0">
+                    <div className="w-36 h-36 sm:w-44 sm:h-44 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl overflow-hidden">
                       <img
                         src={appointment.doctor.image}
                         alt={appointment.doctor.name}
