@@ -1,6 +1,10 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import connectCloudinary from "./src/config/cloudinary.js";
+import addminRoutes from "./src/routes/admin.route.js";
+
+dotenv.config();
 
 const app = express();
 
@@ -15,6 +19,6 @@ connectCloudinary();
 app.get("/", (req, res) => {
   res.send("Welcome to Backend API");
 });
-// app.use("/api");
+app.use("/api/admin", addminRoutes);
 
 export default app;
