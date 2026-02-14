@@ -2,6 +2,7 @@ import Doctor from "../models/doctor.model.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
+import jwt from "jsonwebtoken";
 
 // api for adding doctor
 const addDoctor = async (req, res) => {
@@ -103,4 +104,53 @@ const addDoctor = async (req, res) => {
   }
 };
 
-export { addDoctor };
+// login admin api
+const adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+  // check if email and password are provided
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and password are required" });
+  }
+  try {
+    // validate email format
+    if (!validator.isEmail(email)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter a valid email" });
+    }
+    // check if email and password match the admin credentials
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      // generate a token
+      const token = jwt.sign(
+        email + password,
+        process.env.JWT_SECRET_KEY,
+        // {expiresIn: "1d"}
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Admin logged in successfully",
+        token: token,
+      });
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+  } catch (error) {
+    console.error("Error during admin login:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { addDoctor, adminLogin };
