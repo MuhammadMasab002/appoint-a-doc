@@ -1,41 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import CustomFormInput, { INPUT_TYPES } from "../common/inputs/CustomFormInput";
-
-import SearchIcon from "@mui/icons-material/Search";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
 
 // import Sidebar from "../layout/Sidebar";
-import { NAV_ITEMS } from "../../constants/navigation";
 import Sidebar from "./Sidebar";
 import { assets } from "../../assets/assets";
 
 const Header = () => {
-  const [search, setSearch] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
-  const user = null;
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // const user = null;
 
   const handleLogout = () => {
     // logout api call can be added here
-    setIsDropdownOpen(false);
-    navigate("/signin");
+    navigate("/admin/login");
   };
 
   return (
@@ -69,20 +48,15 @@ const Header = () => {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-4">
-              {/* Search Mobile */}
-              <button className="md:hidden p-2 rounded-full hover:bg-gray-100">
-                <SearchIcon />
+            <div className="space-x-4">
+              <button
+                onClick={handleLogout}
+                className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-blue-500 cursor-pointer"
+              >
+                <p className="text-xs font-medium text-gray-700 px-3 py-0.5">
+                  Logout
+                </p>
               </button>
-
-              {/* Profile */}
-              <div className="space-x-4">
-                <button className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-blue-500 cursor-pointer">
-                  <p className="text-xs font-medium text-gray-700 px-3 py-0.5">
-                    Logout
-                  </p>
-                </button>
-              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomButton, {
   BUTTON_VARIANTS,
@@ -6,16 +6,21 @@ import CustomButton, {
 import CustomFormInput, {
   INPUT_TYPES,
 } from "../components/common/inputs/CustomFormInput";
+import axios from "axios";
+import { AdminContext } from "../services/context/AdminContext";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const navigate = useNavigate();
+
+  const { setAuthToken, backendUrl } = useContext(AdminContext);
 
   // state for admin login / doctor login
   const [isAdminLogin, setIsAdminLogin] = useState(true);
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "admin@admin.com",
+    password: "admin1234",
   });
 
   const [errors, setErrors] = useState({
@@ -64,17 +69,31 @@ const SignIn = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    // Fake login check
     const { email, password } = formData;
-    if (email === "admin@admin.com" && password === "admin1234") {
-      setFormData({ email: "", password: "" });
-      navigate("/");
-    } else {
+
+    try {
+      if (isAdminLogin) {
+        const { data } = await axios.post(`${backendUrl}/admin/login`, {
+          email,
+          password,
+        });
+        console.log("Admin login response:", data);
+        if (data.success) {
+          console.log("Admin login response:", data);
+          localStorage.setItem("adminToken", data.token);
+          setAuthToken(data.token);
+          // navigate("/admin/dashboard");
+          navigate("/admin/");
+        }
+      }
+    } catch (err) {
+      console.error("Admin login error:", err);
+      toast.error(err.response?.data?.message || "Admin login failed");
       setErrors({ ...errors, password: "Invalid email or password" });
     }
   };
