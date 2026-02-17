@@ -1,20 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 
 // import Sidebar from "../layout/Sidebar";
 import Sidebar from "./Sidebar";
 import { assets } from "../../assets/assets";
+import { AdminContext } from "../../services/context/AdminContext";
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const { authToken, setAuthToken } = useContext(AdminContext);
   // const user = null;
 
   const handleLogout = () => {
     // logout api call can be added here
-    navigate("/admin/login");
+    authToken && setAuthToken(null);
+    authToken && localStorage.removeItem("adminToken");
+    navigate("/login");
   };
 
   return (
@@ -42,7 +47,7 @@ const Header = () => {
               </Link>
               <button className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-gray-300 cursor-pointer">
                 <p className="text-xs font-medium text-gray-700 px-3 py-0.5">
-                  Admin
+                  {authToken ? "Admin" : "Doctor"}
                 </p>
               </button>
             </div>

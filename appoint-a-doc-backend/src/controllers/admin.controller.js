@@ -33,7 +33,7 @@ const addDoctor = async (req, res) => {
     !experience ||
     !degree ||
     !about ||
-    availability === undefined ||
+    // availability === undefined ||
     !fees ||
     !address
   ) {
@@ -104,6 +104,26 @@ const addDoctor = async (req, res) => {
   }
 };
 
+// Get all doctors list form admin panel
+const AllDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({})
+      .select("-password")
+      .sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      data: doctors,
+    });
+  } catch (error) {
+    console.error("Error fetching all doctors:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 // login admin api
 const adminLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -153,4 +173,4 @@ const adminLogin = async (req, res) => {
   }
 };
 
-export { addDoctor, adminLogin };
+export { addDoctor, adminLogin, AllDoctors };

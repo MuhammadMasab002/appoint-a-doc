@@ -8,6 +8,10 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import { ToastContainer } from "react-toastify";
 import { useContext } from "react";
 import { AdminContext } from "./services/context/AdminContext";
+import Dashboard from "./pages/Admin/Dashboard";
+import AddDoctor from "./pages/Admin/AddDoctor";
+import DoctorList from "./pages/Admin/DoctorList";
+import AllApointments from "./pages/Admin/AllApointments";
 
 function App() {
   const { authToken } = useContext(AdminContext);
@@ -21,12 +25,16 @@ function App() {
           // This is a simple client-side check. In a real app, you should also verify the token's validity with the backend.
           authToken ? (
             <Route element={<MainLayout />}>
-              {/* Catch-all route for 404 */}
-              <Route path="/admin/" element={<Home />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/admin-dashboard" element={<Dashboard />} />
+              <Route path="/add-doctor" element={<AddDoctor />} />
+              <Route path="/doctor-list" element={<DoctorList />} />
+              <Route path="/all-appointments" element={<AllApointments />} />
+
+              {/* <Route path="*" element={<NotFound />} /> */}
             </Route>
           ) : (
-            <Route path="/admin/login" element={<SignIn />} />
+            <Route path="/login" element={<SignIn />} />
           )
         }
       </Routes>

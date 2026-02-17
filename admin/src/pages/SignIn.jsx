@@ -87,8 +87,8 @@ const SignIn = () => {
           console.log("Admin login response:", data);
           localStorage.setItem("adminToken", data.token);
           setAuthToken(data.token);
-          // navigate("/admin/dashboard");
-          navigate("/admin/");
+          // navigate("/dashboard");
+          navigate("/");
         }
       }
     } catch (err) {
