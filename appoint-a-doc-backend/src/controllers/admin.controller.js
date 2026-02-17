@@ -112,7 +112,7 @@ const AllDoctors = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).json({
       success: true,
-      data: doctors,
+      doctors,
     });
   } catch (error) {
     console.error("Error fetching all doctors:", error);
