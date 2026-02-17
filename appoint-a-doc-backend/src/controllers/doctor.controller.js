@@ -30,4 +30,23 @@ const changeAvalibility = async (req, res) => {
   }
 };
 
-export { changeAvalibility };
+// doctor list
+const doctorList = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select("-email -password");
+    res.status(200).json({
+      success: true,
+      message: "Doctor list fetched successfully",
+      doctors,
+    });
+  } catch (error) {
+    console.error("Error fetching doctor list:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { changeAvalibility, doctorList };

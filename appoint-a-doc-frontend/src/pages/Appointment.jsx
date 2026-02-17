@@ -9,13 +9,13 @@ const Appointment = () => {
   const { doc_id } = useParams();
   const navigate = useNavigate();
   const { doctors } = useContext(AppContext);
-  
+
   // Initialize selectedDate with today's date
   const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   };
-  
+
   const [selectedDate, setSelectedDate] = useState(getTodayDate());
   const [selectedTime, setSelectedTime] = useState(null);
 
@@ -81,6 +81,10 @@ const Appointment = () => {
     );
   };
 
+  const relatedDoctors = doctors.filter(
+    (doc) => doc.speciality === doctor.speciality && doc._id !== doctor._id,
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -91,7 +95,7 @@ const Appointment = () => {
             <div className="flex justify-center md:justify-start">
               <div className="bg-blue-100 rounded-lg overflow-hidden w-80 h-80">
                 <img
-                  src={doctor.image}
+                  src={doctor.profilePicture}
                   alt={doctor.name}
                   className="w-full h-full object-cover"
                 />
@@ -132,7 +136,7 @@ const Appointment = () => {
                 <p className="text-gray-700">
                   Appointment fee:{" "}
                   <span className="text-xl font-bold text-blue-600">
-                    ${doctor.fee || 50}
+                    ${doctor.fees || 50}
                   </span>
                 </p>
               </div>
@@ -239,14 +243,8 @@ const Appointment = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {doctors
-              .filter(
-                (doc) =>
-                  doc.speciality === doctor.speciality &&
-                  doc._id !== doctor._id,
-              )
-              .slice(0, 4)
-              .map((relatedDoctor) => (
+            {relatedDoctors && relatedDoctors.length > 0 ? (
+              relatedDoctors.slice(0, 4).map((relatedDoctor) => (
                 <button
                   key={relatedDoctor._id}
                   onClick={() => navigate(`/appointment/${relatedDoctor._id}`)}
@@ -256,7 +254,7 @@ const Appointment = () => {
                     {/* Doctor Image */}
                     <div className="bg-blue-100 h-56 overflow-hidden flex items-center justify-center">
                       <img
-                        src={relatedDoctor.image}
+                        src={relatedDoctor.profilePicture}
                         alt={relatedDoctor.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
@@ -284,7 +282,12 @@ const Appointment = () => {
                     </div>
                   </div>
                 </button>
-              ))}
+              ))
+            ) : (
+              <p className="text-gray-600 text-center col-span-full">
+                No related doctors available at the moment.
+              </p>
+            )}
           </div>
         </div>
 

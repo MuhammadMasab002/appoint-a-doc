@@ -9,11 +9,24 @@ import Doctors from "./pages/Doctors";
 import Appointment from "./pages/Appointment";
 import MyProfile from "./pages/MyProfile";
 import MyAppointments from "./pages/MyAppointments";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <>
       <ScrollToTop />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />

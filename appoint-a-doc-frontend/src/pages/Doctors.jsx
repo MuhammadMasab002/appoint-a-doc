@@ -74,7 +74,7 @@ const Doctors = () => {
                     {/* Doctor Image */}
                     <div className="bg-blue-100 overflow-hidden">
                       <img
-                        src={doctor.image}
+                        src={doctor.profilePicture}
                         alt={doctor.name}
                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
