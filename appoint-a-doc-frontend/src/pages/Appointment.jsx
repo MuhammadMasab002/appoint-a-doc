@@ -136,7 +136,7 @@ const Appointment = () => {
                 <p className="text-gray-700">
                   Appointment fee:{" "}
                   <span className="text-xl font-bold text-blue-600">
-                    ${doctor.fees || 50}
+                    ${doctor.fees}
                   </span>
                 </p>
               </div>

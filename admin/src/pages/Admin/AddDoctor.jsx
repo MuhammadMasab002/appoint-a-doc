@@ -71,12 +71,12 @@ const AddDoctor = () => {
       const { data } = await axios.post(
         backendUrl + "/admin/add-doctor",
         newFormData,
-        // {
-        //   headers: {
-        //     "Content-Type": "multipart/form-data",
-        //     Authorization: `Bearer ${authToken}`,
-        //   },
-        // },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
       );
 
       if (data.success) {
