@@ -5,13 +5,18 @@ import CustomFormInput, { INPUT_TYPES } from "../common/inputs/CustomFormInput";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LoginIcon from "@mui/icons-material/Login";
 
 // import Sidebar from "../layout/Sidebar";
 import { NAV_ITEMS } from "../../constants/navigation";
 import Sidebar from "./Sidebar";
 import { assets } from "../../assets/assets";
+import { useContext } from "react";
+import { AppContext } from "../../services/context/AppContext";
 
 const Header = () => {
+  const { token, setToken } = useContext(AppContext);
+
   const [search, setSearch] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -34,8 +39,10 @@ const Header = () => {
 
   const handleLogout = () => {
     // logout api call can be added here
+    localStorage.removeItem("token");
+    setToken("");
     setIsDropdownOpen(false);
-    navigate("/signin");
+    navigate("/login");
   };
 
   return (
@@ -65,23 +72,25 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
-              {NAV_ITEMS.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition
+              {NAV_ITEMS?.map((item) =>
+                !token || item.label !== "Sign Up" ? (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end
+                    className={({ isActive }) =>
+                      `text-sm font-medium transition
                     ${
                       isActive
                         ? "text-primary"
                         : "text-gray-700 hover:text-primary"
                     }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ) : null,
+              )}
             </nav>
 
             {/* Right Actions */}
@@ -103,60 +112,71 @@ const Header = () => {
                 <SearchIcon />
               </button>
 
-              {/* Profile */}
-              <div ref={dropdownRef} className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-transparent hover:border-blue-500 cursor-pointer"
-                >
-                  <img
-                    className="w-9 h-9 rounded-full"
-                    src={assets.profile_pic}
-                    alt="profile pic"
-                  />
-                </button>
+              {token ? (
+                <div ref={dropdownRef} className="relative">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-transparent hover:border-blue-500 cursor-pointer"
+                  >
+                    <img
+                      className="w-9 h-9 rounded-full"
+                      src={assets.profile_pic}
+                      alt="profile pic"
+                    />
+                  </button>
 
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <div className="absolute right-0 top-12 w-56 bg-white border border-gray-200 rounded-md shadow-lg py-2 z-50">
-                    {/* User Email */}
-                    {user?.email && (
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-xs text-gray-500">Logged in as</p>
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {user.email}
-                        </p>
-                      </div>
-                    )}
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 top-12 w-56 bg-white border border-gray-200 rounded-md shadow-lg py-2 z-50">
+                      {/* User Email */}
+                      {user?.email && (
+                        <div className="px-4 py-3 border-b border-gray-100">
+                          <p className="text-xs text-gray-500">Logged in as</p>
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      )}
 
-                    {/* Menu Items */}
-                    <Link
-                      to="/my-profile"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-                    >
-                      My Profile
-                    </Link>
+                      {/* Menu Items */}
+                      <Link
+                        to="/my-profile"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                      >
+                        My Profile
+                      </Link>
 
-                    <Link
-                      to="/my-appointments"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-                    >
-                      My Appointments
-                    </Link>
+                      <Link
+                        to="/my-appointments"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                      >
+                        My Appointments
+                      </Link>
 
-                    {/* Logout */}
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2 border-t border-gray-100"
-                    >
-                      <LogoutIcon fontSize="small" />
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+                      {/* Logout */}
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2 border-t border-gray-100"
+                      >
+                        <LogoutIcon fontSize="small" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition cursor-pointer flex items-center gap-2 border-t border-gray-100"
+                  >
+                    Login
+                    <LoginIcon fontSize="small" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

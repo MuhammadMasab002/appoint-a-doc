@@ -6,9 +6,16 @@ import CustomButton, {
 import CustomFormInput, {
   INPUT_TYPES,
 } from "../components/common/inputs/CustomFormInput";
+import axios from "axios";
+import { useContext } from "react";
+import { AppContext } from "../services/context/AppContext";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const navigate = useNavigate();
+
+  const { backendUrl, token } = useContext(AppContext);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -71,24 +78,44 @@ const SignUp = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    // DUMMY signup success
-    console.log("Signup successfully:", formData);
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/user/register",
+        formData,
+      );
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-    });
-
-    // Redirect to login
-    navigate("/login");
+      if (data.success) {
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+        });
+        toast.success(data.message || "Registration successful");
+        navigate("/login", { replace: true });
+      } else {
+        setErrors({ ...errors, password: data.message });
+        toast.error(data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      toast.error(
+        "Error during signup: " +
+          (error.response?.data?.error || error.response?.data?.message),
+      );
+    }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/", { replace: true });
+    }
+  }, [token]);
 
   return (
     <div className="w-full min-h-screen">

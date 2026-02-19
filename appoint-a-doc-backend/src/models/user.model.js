@@ -12,7 +12,7 @@ const userSchema = new Schema(
     }, // URL to the profile picture
     address: { type: Object, default: { line1: "", line2: "" } },
     gender: { type: String, default: "Not specified" },
-    dateOfBirth: { type: Date, default: "Not selected" },
+    dateOfBirth: { type: Date, default: null },
     phone: { type: String, default: "000000000" },
   },
   { timestamps: true },

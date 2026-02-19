@@ -6,9 +6,16 @@ import CustomButton, {
 import CustomFormInput, {
   INPUT_TYPES,
 } from "../components/common/inputs/CustomFormInput";
+import { useContext } from "react";
+import { AppContext } from "../services/context/AppContext";
+import axios from "axios";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const navigate = useNavigate();
+
+  const { backendUrl, token, setToken } = useContext(AppContext);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -61,20 +68,42 @@ const SignIn = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    // Fake login check
-    const { email, password } = formData;
-    if (email === "admin@example.com" && password === "12345678") {
-      setFormData({ email: "", password: "" });
-      navigate("/");
-    } else {
-      setErrors({ ...errors, password: "Invalid email or password" });
+    try {
+      const { data } = await axios.post(backendUrl + "/user/login", formData);
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        // Clear form data
+        setFormData({
+          email: "",
+          password: "",
+        });
+        toast.success(data.message || "Login successful");
+        navigate("/", { replace: true });
+      } else {
+        setErrors({ ...errors, password: data.message });
+        toast.error(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast.error(
+        "Error during login: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/", { replace: true });
+    }
+  }, [token]);
 
   return (
     <div className="w-full min-h-screen">

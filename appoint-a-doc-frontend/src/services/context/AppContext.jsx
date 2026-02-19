@@ -11,6 +11,9 @@ const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [doctors, setDoctors] = useState([]);
+  const [token, setToken] = useState(
+    localStorage.getItem("token") ? localStorage.getItem("token") : "",
+  );
 
   useEffect(() => {
     const getAllDoctors = async () => {
@@ -40,6 +43,8 @@ const AppContextProvider = ({ children }) => {
     doctors,
     currencySymbol,
     backendUrl,
+    token,
+    setToken,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
