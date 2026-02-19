@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectCloudinary from "./src/config/cloudinary.js";
 import adminRoutes from "./src/routes/admin.route.js";
 import doctorRouter from "./src/routes/doctor.route.js";
+import userRouter from "./src/routes/user.route.js";
 
 dotenv.config();
 
@@ -22,5 +23,6 @@ app.get("/", (req, res) => {
 });
 app.use("/api/admin", adminRoutes);
 app.use("/api/doctor", doctorRouter);
+app.use("/api/user", userRouter);
 
 export default app;
