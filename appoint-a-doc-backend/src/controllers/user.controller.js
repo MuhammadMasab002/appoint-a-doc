@@ -2,6 +2,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import { v2 as cloudinary } from "cloudinary";
 
 // register user
 
@@ -115,4 +116,80 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser };
+// Api to user profile details
+const getUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.log("Error in getUserProfile controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+// Update user profile details
+const updateUserProfile = async (req, res) => {
+  try {
+    const { userId, name, email, phone, address, dateOfBirth, gender } =
+      req.body;
+
+    const imageFile = req.file;
+
+    if (!name || !email || !phone || !dateOfBirth || !gender) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+
+    const user = await User.findByIdAndUpdate(userId, {
+      name,
+      email,
+      phone,
+      // address: JSON.parse(address),
+      address,
+      dateOfBirth,
+      gender,
+    });
+
+    if (imageFile) {
+      // upload image to cloudinary and get the url
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+
+      const imageUrl = imageUpload.secure_url;
+
+      await User.findByIdAndUpdate(userId, { profileImage: imageUrl });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User profile updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in updateUserProfile controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { registerUser, loginUser, getUserProfile, updateUserProfile };
