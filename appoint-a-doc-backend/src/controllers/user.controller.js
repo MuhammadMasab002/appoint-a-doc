@@ -121,6 +121,13 @@ const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.body;
 
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: Login again...",
+      });
+    }
+
     const user = await User.findById(userId).select("-password");
 
     if (!user) {
@@ -149,6 +156,13 @@ const updateUserProfile = async (req, res) => {
     const { userId, name, email, phone, address, dateOfBirth, gender } =
       req.body;
 
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: Login again",
+      });
+    }
+
     const imageFile = req.file;
 
     if (!name || !email || !phone || !dateOfBirth || !gender) {
@@ -157,26 +171,48 @@ const updateUserProfile = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
-    const user = await User.findByIdAndUpdate(userId, {
+    let parsedAddress = address;
+    if (typeof address === "string") {
+      try {
+        parsedAddress = JSON.parse(address);
+      } catch (parseError) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid address format",
+          error: parseError.message,
+        });
+      }
+    }
+
+    const updateData = {
       name,
       email,
       phone,
-      // address: JSON.parse(address),
-      address,
+      address: {
+        line1: parsedAddress?.line1 || "",
+        line2: parsedAddress?.line2 || "",
+      },
       dateOfBirth,
       gender,
-    });
+    };
 
+    let imageUrl = null;
     if (imageFile) {
       // upload image to cloudinary and get the url
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
         resource_type: "image",
       });
 
-      const imageUrl = imageUpload.secure_url;
-
-      await User.findByIdAndUpdate(userId, { profileImage: imageUrl });
+      imageUrl = imageUpload.secure_url;
     }
+
+    await User.findByIdAndUpdate(
+      userId,
+      { ...updateData, profilePicture: imageUrl },
+      {
+        new: true,
+      },
+    ).select("-password");
 
     res.status(200).json({
       success: true,

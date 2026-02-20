@@ -25,6 +25,7 @@ const authUser = (req, res, next) => {
       });
     }
 
+    req.body = req.body && typeof req.body === "object" ? req.body : {};
     req.body.userId = decoded_token.userId;
 
     next();

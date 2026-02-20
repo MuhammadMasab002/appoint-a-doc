@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import CustomButton from "../components/common/buttons/CustomButton";
 import CustomFormInput from "../components/common/inputs/CustomFormInput";
 import PersonIcon from "@mui/icons-material/Person";
@@ -11,26 +11,50 @@ import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import { AppContext } from "../services/context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const fileInputRef = useRef(null);
 
-  const [profileData, setProfileData] = useState({
-    name: "Test",
-    email: "masab@gmail.com",
-    phone: "0000000000",
-    address: "",
-    gender: "Not Selected",
-    birthday: "",
+  const { userData, backendUrl, token, loadUserProfileData } =
+    useContext(AppContext);
+
+  const formatDateOnly = (value) => {
+    if (!value) return "";
+    return String(value).split("T")[0];
+  };
+
+  const buildFormDataFromUser = (user = {}) => ({
+    ...user,
+    dateOfBirth: formatDateOnly(user?.dateOfBirth),
+    address: {
+      line1: user?.address?.line1 || "",
+      line2: user?.address?.line2 || "",
+    },
   });
 
-  const [formData, setFormData] = useState({ ...profileData });
+  const [formData, setFormData] = useState(buildFormDataFromUser(userData));
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "addressLine1" || name === "addressLine2") {
+      const field = name === "addressLine1" ? "line1" : "line2";
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...(prev.address || {}),
+          [field]: value,
+        },
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -40,6 +64,7 @@ const MyProfile = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setSelectedImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
@@ -56,24 +81,71 @@ const MyProfile = () => {
 
   const handleEdit = () => {
     setIsEditing(true);
-    setFormData({ ...profileData });
-    setPreviewImage(profileImage);
+    setFormData(buildFormDataFromUser(userData));
+    setPreviewImage(userData?.profilePicture || null);
+    setSelectedImageFile(null);
   };
 
-  const handleSave = () => {
-    setProfileData({ ...formData });
-    setProfileImage(previewImage);
-    setIsEditing(false);
+  const updateUserProfile = async () => {
+    try {
+      const newFormData = new FormData();
+
+      newFormData.append("name", formData.name);
+      newFormData.append("email", formData.email);
+      newFormData.append("phone", formData.phone);
+      newFormData.append("dateOfBirth", formData.dateOfBirth);
+      newFormData.append("gender", formData.gender);
+
+      newFormData.append(
+        "address",
+        JSON.stringify({
+          line1: formData.address?.line1 || "",
+          line2: formData.address?.line2 || "",
+        }),
+      );
+
+      if (selectedImageFile) {
+        newFormData.append("image", selectedImageFile);
+      }
+
+      const { data } = await axios.put(
+        `${backendUrl}/user/update-profile`,
+        newFormData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (data.success) {
+        await loadUserProfileData();
+
+        setIsEditing(false);
+        setSelectedImageFile(null);
+        setPreviewImage(null);
+        toast.success(data.message || "Profile updated successfully");
+      } else {
+        toast.error(data.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error updating user profile: ", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to update profile. Please try again.",
+      );
+    }
   };
 
   const handleCancel = () => {
-    setFormData({ ...profileData });
-    setPreviewImage(profileImage);
+    setFormData(buildFormDataFromUser(userData));
+    setPreviewImage(userData?.profilePicture || null);
+    setSelectedImageFile(null);
     setIsEditing(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-blue-50 py-8 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header with Edit Button */}
         <div className="flex justify-between items-center mb-6">
@@ -91,7 +163,7 @@ const MyProfile = () => {
               onClick={handleEdit}
               variant="primary"
               fullWidth={false}
-              className="px-6 py-2.5 shadow-lg hover:shadow-xl transition-shadow"
+              className="text-sm shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
               leftIcon={<EditIcon />}
             />
           )}
@@ -99,28 +171,28 @@ const MyProfile = () => {
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
           {/* Profile Header with Gradient */}
-          <div className="bg-gradient-to-r from-indigo-500 to-blue-600 h-32 sm:h-40 relative z-10">
+          <div className="bg-linear-to-r from-indigo-400 to-blue-600 h-32 sm:h-40 relative z-10">
             <div className="absolute inset-0 bg-black opacity-5"></div>
           </div>
 
           <div className="px-6 sm:px-8 pb-8">
             {/* Profile Picture and Name */}
             <div className="flex flex-col items-center sm:items-start sm:flex-row sm:gap-8 -mt-16 sm:-mt-20 mb-8">
-              <div className="relative group z-50">
+              <div className="relative group z-10">
                 <div
                   className={`w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-white shadow-2xl border-4 border-white flex items-center justify-center overflow-hidden ${
                     isEditing ? "cursor-pointer" : ""
                   }`}
                   onClick={handleImageClick}
                 >
-                  {previewImage || profileImage ? (
+                  {previewImage || userData?.profilePicture ? (
                     <img
-                      src={previewImage || profileImage}
+                      src={previewImage || userData?.profilePicture}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
+                    <div className="w-full h-full bg-linear-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
                       <PersonIcon
                         className="text-indigo-400"
                         style={{ fontSize: 80 }}
@@ -131,7 +203,7 @@ const MyProfile = () => {
                 {isEditing && (
                   <>
                     <div
-                      className="absolute inset-0 w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-600 bg-opacity-90 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-85 transition-all duration-300"
+                      className="absolute inset-0 w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-linear-to-br from-indigo-600 to-blue-600 bg-opacity-90 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-85 transition-all duration-300"
                       onClick={handleImageClick}
                     >
                       <div className="text-center text-white">
@@ -149,7 +221,7 @@ const MyProfile = () => {
                   </>
                 )}
               </div>
-              <div className="flex-1 text-center sm:text-left mt-4 sm:mt-9 z-50">
+              <div className="flex-1 text-center sm:text-left mt-4 sm:mt-9 z-10">
                 {isEditing ? (
                   <div className="max-w-md mt-12">
                     <CustomFormInput
@@ -164,9 +236,8 @@ const MyProfile = () => {
                   </div>
                 ) : (
                   <div>
-                    <h2 className="text-3xl sm:text-4xl font-bold text-black mb-2 truncate">
-                      {profileData.name +
-                        "my name is masab ashraf, i'm from mian channun"}
+                    <h2 className="text-3xl sm:text-4xl font-bold text-black mb-2">
+                      {userData.name ?? "Anonymous User"}
                     </h2>
                     <p className="text-indigo-400 font-medium">Patient</p>
                   </div>
@@ -197,7 +268,7 @@ const MyProfile = () => {
                         Email Address
                       </label>
                       <p className="text-indigo-600 font-medium break-all">
-                        {profileData.email}
+                        {userData.email ?? "No email available"}
                       </p>
                       {isEditing && (
                         <p className="text-xs text-gray-500 mt-1">
@@ -226,7 +297,7 @@ const MyProfile = () => {
                         />
                       ) : (
                         <p className="text-indigo-600 font-medium">
-                          {profileData.phone}
+                          {userData.phone ?? "Not provided"}
                         </p>
                       )}
                     </div>
@@ -235,24 +306,40 @@ const MyProfile = () => {
 
                 {/* Address */}
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200 hover:border-indigo-300 transition-colors md:col-span-2">
-                  <div className="flex items-start gap-3">
+                  <div className="flex sm:flexrow items-center gap-3">
                     <HomeOutlinedIcon className="text-indigo-600 mt-1" />
-                    <div className="flex-1">
-                      <label className="text-sm text-gray-600 font-medium block mb-2">
-                        Address
-                      </label>
+                    {/* <div className="flex-1"> */}
+                    <label className="text-sm text-gray-600 font-medium block">
+                      Address
+                    </label>
+                    {/* </div> */}
+                    <div className="w-full flex flex-col sm:flex-row items-center justify-evenly sm:gap-4 gap-1">
                       {isEditing ? (
-                        <CustomFormInput
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          placeholder="Enter your address"
-                        />
+                        <>
+                          <CustomFormInput
+                            type="text"
+                            name="addressLine1"
+                            value={formData.address?.line1}
+                            onChange={handleInputChange}
+                            placeholder="Enter your address"
+                          />
+                          <CustomFormInput
+                            type="text"
+                            name="addressLine2"
+                            value={formData.address?.line2}
+                            onChange={handleInputChange}
+                            placeholder="Enter your address"
+                          />
+                        </>
                       ) : (
-                        <p className="text-gray-700 font-medium">
-                          {profileData.address || "Not provided"}
-                        </p>
+                        <>
+                          <p className="text-gray-700 font-medium">
+                            {userData.address?.line1 || "Not provided"}
+                          </p>
+                          <p className="text-gray-700 font-medium">
+                            {userData.address?.line2 || "Not provided"}
+                          </p>
+                        </>
                       )}
                     </div>
                   </div>
@@ -293,7 +380,7 @@ const MyProfile = () => {
                         </select>
                       ) : (
                         <p className="text-gray-700 font-medium">
-                          {profileData.gender}
+                          {userData.gender}
                         </p>
                       )}
                     </div>
@@ -311,15 +398,16 @@ const MyProfile = () => {
                       {isEditing ? (
                         <input
                           type="date"
-                          name="birthday"
-                          value={formData.birthday}
+                          name="dateOfBirth"
+                          value={formatDateOnly(formData.dateOfBirth)}
                           onChange={handleInputChange}
                           className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium text-gray-700"
                           placeholder="mm/dd/yyyy"
                         />
                       ) : (
                         <p className="text-gray-700 font-medium">
-                          {profileData.birthday || "Not provided"}
+                          {formatDateOnly(userData.dateOfBirth) ||
+                            "Not provided"}
                         </p>
                       )}
                     </div>
@@ -333,7 +421,7 @@ const MyProfile = () => {
               <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                 <CustomButton
                   text="Save Changes"
-                  onClick={handleSave}
+                  onClick={updateUserProfile}
                   variant="primary"
                   fullWidth={false}
                   className="px-8 py-3 shadow-lg hover:shadow-xl transition-all"

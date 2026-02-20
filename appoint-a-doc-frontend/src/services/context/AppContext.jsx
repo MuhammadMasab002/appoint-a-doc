@@ -2,6 +2,7 @@ import { createContext } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useCallback } from "react";
 import { toast } from "react-toastify";
 
 export const AppContext = createContext();
@@ -14,6 +15,8 @@ const AppContextProvider = ({ children }) => {
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : "",
   );
+
+  const [userData, setUserData] = useState("");
 
   useEffect(() => {
     const getAllDoctors = async () => {
@@ -39,12 +42,47 @@ const AppContextProvider = ({ children }) => {
     getAllDoctors();
   }, [backendUrl]);
 
+  const loadUserProfileData = useCallback(async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/user/get-profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data.success) {
+        setUserData(data.user);
+      } else {
+        toast.error(data.message || "Failed to load user data");
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      toast.error(
+        "Error loading user data: " +
+          (error.response?.data?.error || error.response?.data?.message),
+      );
+    }
+  }, [backendUrl, token]);
+
+  useEffect(() => {
+    if (token) {
+      // loadUserProfileData();
+      const timerId = setTimeout(() => {
+        loadUserProfileData();
+      }, 0);
+
+      return () => clearTimeout(timerId);
+    }
+  }, [token, loadUserProfileData]);
+
   const value = {
     doctors,
     currencySymbol,
     backendUrl,
     token,
     setToken,
+    userData: token ? userData : "",
+    setUserData,
+    loadUserProfileData,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
