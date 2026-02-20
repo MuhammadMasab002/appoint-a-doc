@@ -15,7 +15,7 @@ import { useContext } from "react";
 import { AppContext } from "../../services/context/AppContext";
 
 const Header = () => {
-  const { token, setToken } = useContext(AppContext);
+  const { token, setToken, userData } = useContext(AppContext);
 
   const [search, setSearch] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,7 +23,7 @@ const Header = () => {
   const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
-  const user = null;
+  const user = userData;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -98,7 +98,7 @@ const Header = () => {
               {/* Search Desktop */}
               <div className="hidden md:block w-64">
                 <CustomFormInput
-                  placeholder="Search products..."
+                  placeholder="Search here..."
                   name="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -112,7 +112,7 @@ const Header = () => {
                 <SearchIcon />
               </button>
 
-              {token ? (
+              {token && user ? (
                 <div ref={dropdownRef} className="relative">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -120,7 +120,7 @@ const Header = () => {
                   >
                     <img
                       className="w-9 h-9 rounded-full"
-                      src={assets.profile_pic}
+                      src={user?.profilePicture || assets.profile_pic}
                       alt="profile pic"
                     />
                   </button>
