@@ -103,7 +103,7 @@ const SignIn = () => {
     if (token) {
       navigate("/", { replace: true });
     }
-  }, [token]);
+  }, [token, navigate]);
 
   return (
     <div className="w-full min-h-screen">
@@ -155,7 +155,7 @@ const SignIn = () => {
                 text="Sign Up"
                 type="button"
                 variant={BUTTON_VARIANTS.TEXT_PRIMARY}
-                className="!py-0 !px-1"
+                className="py-0! px-1!"
                 fullWidth={false}
                 onClick={() => navigate("/signup")}
               />
