@@ -4,33 +4,31 @@ import CustomButton, {
 } from "../components/common/buttons/CustomButton";
 import axios from "axios";
 import { AppContext } from "../services/context/AppContext";
+import { toast } from "react-toastify";
 
 const MyAppointments = () => {
-  const { backendUrl, token, currencySymbol } = useContext(AppContext);
-  
+  const { backendUrl, token, currencySymbol, getAllDoctors } =
+    useContext(AppContext);
+
   const [appointments, setAppointments] = useState([]);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const { data } = await axios.get(
-          backendUrl + "/user/list-appointments",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-        if (data.success) {
-          setAppointments(data.data);
-        } else {
-          console.error(data.message || "Failed to fetch appointments");
-        }
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
+  const fetchAppointments = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/user/list-appointments", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data.success) {
+        setAppointments(data.data);
+      } else {
+        console.error(data.message || "Failed to fetch appointments");
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+  useEffect(() => {
     fetchAppointments();
   }, [backendUrl, token]);
 
@@ -87,16 +85,36 @@ const MyAppointments = () => {
     );
   };
 
-  const handleCancelAppointment = (appointmentId) => {
-    setAppointments(
-      appointments.map((apt) =>
-        apt._id === appointmentId ? { ...apt, cancelled: true } : apt,
-      ),
-    );
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/user/cancel-appointment",
+        { appointmentId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (data.success) {
+        fetchAppointments();
+        getAllDoctors();
+        toast.success(data.message || "Appointment cancelled successfully");
+      } else {
+        toast.error(data.message || "Failed to cancel appointment");
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to cancel appointment",
+      );
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -140,11 +158,14 @@ const MyAppointments = () => {
                           Address:
                         </p>
                         <p className="text-gray-600 text-sm">
-                          {parseDoctorAddress(appointment.doctorData?.address).line1 ||
-                            "-"}
+                          {parseDoctorAddress(appointment.doctorData?.address)
+                            .line1 || "-"}
                         </p>
                         <p className="text-gray-600 text-sm">
-                          {parseDoctorAddress(appointment.doctorData?.address).line2}
+                          {
+                            parseDoctorAddress(appointment.doctorData?.address)
+                              .line2
+                          }
                         </p>
                       </div>
 
@@ -171,7 +192,7 @@ const MyAppointments = () => {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col justify-center gap-3 lg:min-w-[200px]">
-                    {appointment.cancelled === true ? (
+                    {appointment.cancelled ? (
                       <CustomButton
                         text="Appointment cancelled"
                         disabled={true}
@@ -181,7 +202,7 @@ const MyAppointments = () => {
                       />
                     ) : (
                       <>
-                        {!appointment.showPayment ? (
+                        {!appointment.payment ? (
                           <>
                             <CustomButton
                               text="Pay Online"

@@ -258,7 +258,7 @@ const bookAppointment = async (req, res) => {
       });
     }
 
-    const slots_booked = doctor.slots_booked;
+    const slots_booked = doctor.slots_booked || {};
     // checking for slot availability
     if (slots_booked[slotDate]) {
       if (slots_booked[slotDate].includes(slotTime)) {
@@ -324,7 +324,7 @@ const listAppointments = async (req, res) => {
       });
     }
 
-    const appointments = await Appointment.find({ userId });
+    const appointments = await Appointment.find({ userId }).sort({ createdAt: -1 }) ;
 
     if (appointments.length === 0) {
       return res.status(404).json({
@@ -381,10 +381,30 @@ const cancelAppointment = async (req, res) => {
 
     const doctor = await Doctor.findById(doctorId);
 
-    let slots_booked = doctor.slots_booked;
-    slots_booked[slotDate] = slots_booked[slotDate].filter(
-      (time) => time !== slotTime,
-    );
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    const slots_booked = doctor.slots_booked || {};
+    const appointmentDate =
+      slotDate instanceof Date ? slotDate : new Date(slotDate);
+    const normalizedSlotDate =
+      !Number.isNaN(appointmentDate.getTime())
+        ? appointmentDate.toISOString().split("T")[0]
+        : String(slotDate);
+    const rawSlotDateKey =
+      typeof slotDate === "string" ? slotDate : String(slotDate);
+    const slotDateKey = Array.isArray(slots_booked[normalizedSlotDate])
+      ? normalizedSlotDate
+      : rawSlotDateKey;
+    const existingSlots = Array.isArray(slots_booked[slotDateKey])
+      ? slots_booked[slotDateKey]
+      : [];
+
+    slots_booked[slotDateKey] = existingSlots.filter((time) => time !== slotTime);
 
     await Doctor.findByIdAndUpdate(doctorId, { slots_booked });
 
