@@ -1,14 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../services/context/AppContext";
 import CustomButton from "../components/common/buttons/CustomButton";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Appointment = () => {
   const { doc_id } = useParams();
   const navigate = useNavigate();
-  const { doctors } = useContext(AppContext);
+  const { doctors, currencySymbol, backendUrl, token, getAllDoctors } =
+    useContext(AppContext);
 
   // Initialize selectedDate with today's date
   const getTodayDate = () => {
@@ -22,35 +25,32 @@ const Appointment = () => {
   // Find the doctor by ID
   const doctor = doctors.find((doc) => doc._id === doc_id);
 
-  if (!doctor) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Doctor not found
-          </h1>
-          <button
-            onClick={() => navigate("/doctors")}
-            className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
-          >
-            Back to Doctors
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const bookedSlotsForSelectedDate = useMemo(
+    () => doctor?.slots_booked?.[selectedDate] || [],
+    [doctor, selectedDate],
+  );
 
-  // Generate time slots
-  const timeSlots = [
-    "10:00 am",
-    "11:00 am",
-    "11:30 am",
-    "12:00 pm",
-    "12:30 pm",
-    "01:00 pm",
-    "01:30 pm",
-    "02:00 pm",
-  ];
+  const availableTimeSlots = useMemo(() => {
+    const timeSlots = [
+      "10:00 am",
+      "11:00 am",
+      "11:30 am",
+      "12:00 pm",
+      "12:30 pm",
+      "01:00 pm",
+      "01:30 pm",
+      "02:00 pm",
+    ];
+
+    return timeSlots.filter(
+      (time) => !bookedSlotsForSelectedDate.includes(time),
+    );
+  }, [bookedSlotsForSelectedDate]);
+
+  const effectiveSelectedTime =
+    selectedTime && !bookedSlotsForSelectedDate.includes(selectedTime)
+      ? selectedTime
+      : null;
 
   // Generate next 7 days
   const getDaysArray = () => {
@@ -70,15 +70,65 @@ const Appointment = () => {
 
   const daysArray = getDaysArray();
 
-  const handleBookAppointment = () => {
-    if (!selectedDate || !selectedTime) {
-      alert("Please select both date and time");
+  if (!doctor) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Doctor not found
+          </h1>
+          <button
+            onClick={() => navigate("/doctors")}
+            className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+          >
+            Back to Doctors
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const handleBookAppointment = async () => {
+    if (!selectedDate || !effectiveSelectedTime) {
+      toast.warn("Please select an available date and time");
       return;
     }
-    // TODO: Implement appointment booking logic
-    alert(
-      `Appointment booked for ${doctor.name} on ${selectedDate} at ${selectedTime}`,
-    );
+
+    if (!token) {
+      toast.warn("Please login to book an appointment");
+      navigate("/login");
+      return;
+    }
+
+    // book appointment api call
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/user/book-appointment",
+        {
+          doctorId: doctor._id,
+          slotDate: selectedDate,
+          slotTime: effectiveSelectedTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (data.success) {
+        toast.success("Appointment booked successfully");
+        getAllDoctors(); // Refresh the list of doctors
+      } else {
+        toast.error("Failed to book appointment");
+      }
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      toast.error(
+        "Error booking appointment: " +
+          (error.response?.data?.message || error.message),
+      );
+    }
   };
 
   const relatedDoctors = doctors.filter(
@@ -159,7 +209,10 @@ const Appointment = () => {
               {daysArray.map((day, index) => (
                 <button
                   key={index}
-                  onClick={() => setSelectedDate(day.fullDate)}
+                  onClick={() => {
+                    setSelectedDate(day.fullDate);
+                    setSelectedTime(null);
+                  }}
                   className={`flex flex-col items-center justify-center w-16 h-20 rounded-full font-semibold transition-all duration-300 minw-fit ${
                     selectedDate === day.fullDate
                       ? "bg-blue-600 text-white shadow-lg"
@@ -179,7 +232,7 @@ const Appointment = () => {
               Select Time
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
-              {timeSlots.map((time, index) => (
+              {availableTimeSlots.map((time, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedTime(time)}
@@ -193,10 +246,15 @@ const Appointment = () => {
                 </button>
               ))}
             </div>
+            {availableTimeSlots.length === 0 && (
+              <p className="text-gray-600 mt-4">
+                No available slots for this date. Please select another date.
+              </p>
+            )}
           </div>
 
           {/* Selected Details Summary */}
-          {selectedDate && selectedTime && (
+          {selectedDate && effectiveSelectedTime && (
             <div className="bg-blue-50 p-6 rounded-lg mb-8">
               <div className="flex flex-col sm:flex-row gap-8">
                 <div className="flex items-center gap-3">
@@ -213,7 +271,7 @@ const Appointment = () => {
                   <div>
                     <p className="text-gray-600 text-sm">Time</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {selectedTime}
+                      {effectiveSelectedTime}
                     </p>
                   </div>
                 </div>
@@ -225,7 +283,7 @@ const Appointment = () => {
           <button
             onClick={handleBookAppointment}
             className="w-full bg-blue-600 text-white py-4 px-6 rounded-full font-bold text-lg hover:bg-blue-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!selectedDate || !selectedTime}
+            disabled={!selectedDate || !effectiveSelectedTime}
           >
             Book an appointment
           </button>
