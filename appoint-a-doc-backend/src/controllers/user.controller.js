@@ -230,7 +230,7 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-// Book appointment 
+// Book appointment
 const bookAppointment = async (req, res) => {
   try {
     const { userId, doctorId, slotDate, slotTime } = req.body;
@@ -312,10 +312,46 @@ const bookAppointment = async (req, res) => {
   }
 };
 
+// get user appointments
+const listAppointments = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: Login again",
+      });
+    }
+
+    const appointments = await Appointment.find({ userId });
+
+    if (appointments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No appointments found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: appointments,
+    });
+  } catch (error) {
+    console.log("Error in list Appointments controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
   getUserProfile,
   updateUserProfile,
   bookAppointment,
+  listAppointments,
 };

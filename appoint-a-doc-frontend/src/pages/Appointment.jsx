@@ -119,6 +119,7 @@ const Appointment = () => {
       if (data.success) {
         toast.success("Appointment booked successfully");
         getAllDoctors(); // Refresh the list of doctors
+        navigate("/my-appointments");
       } else {
         toast.error("Failed to book appointment");
       }

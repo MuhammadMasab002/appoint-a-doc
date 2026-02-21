@@ -1,13 +1,14 @@
 import express from "express";
 import {
+  bookAppointment,
   getUserProfile,
+  listAppointments,
   loginUser,
   registerUser,
   updateUserProfile,
 } from "../controllers/user.controller.js";
 import authUser from "../middleware/authUser.js";
 import upload from "../middleware/multer.js";
-import { bookAppointment } from "../controllers/Appoinment.controller.js";
 
 const userRouter = express.Router();
 
@@ -21,5 +22,6 @@ userRouter.put(
   updateUserProfile,
 );
 userRouter.post("/book-appointment", authUser, bookAppointment);
+userRouter.get("/list-appointments", authUser, listAppointments);
 
 export default userRouter;
