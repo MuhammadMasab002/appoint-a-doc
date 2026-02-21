@@ -347,6 +347,61 @@ const listAppointments = async (req, res) => {
   }
 };
 
+// cancel appointment
+const cancelAppointment = async (req, res) => {
+  try {
+    const { userId, appointmentId } = req.body;
+
+    if (!userId || !appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    if (appointment.userId !== userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: You can only cancel your own appointments",
+      });
+    }
+
+    await Appointment.findByIdAndUpdate(appointmentId, { cancelled: true });
+
+    const { doctorId, slotDate, slotTime } = appointment;
+
+    const doctor = await Doctor.findById(doctorId);
+
+    let slots_booked = doctor.slots_booked;
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (time) => time !== slotTime,
+    );
+
+    await Doctor.findByIdAndUpdate(doctorId, { slots_booked });
+
+    res.status(200).json({
+      success: true,
+      message: "Appointment cancelled successfully",
+    });
+  } catch (error) {
+    console.log("Error in cancel Appointment controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -354,4 +409,5 @@ export {
   updateUserProfile,
   bookAppointment,
   listAppointments,
+  cancelAppointment,
 };
