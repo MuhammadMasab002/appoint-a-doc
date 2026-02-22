@@ -24,9 +24,9 @@ const Doctors = () => {
           Browse through the doctors specialist.
         </h1>
 
-        <div className="flex gap-8">
+        <div className="flex md:flex-row flex-col gap-8">
           {/* Sidebar - Specialities Filter */}
-          <div className="w-full md:w-48 flex-shrink-0">
+          <div className="w-full md:w-48 shrink-0">
             <div className="flex flex-col gap-3">
               {/* All Doctors Button */}
               <button

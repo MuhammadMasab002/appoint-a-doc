@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import Appointment from "../models/Appointment.model.js";
 import Doctor from "../models/doctor.model.js";
 import User from "../models/user.model.js";
+import Razorpay from "razorpay";
 
 // register user
 
@@ -324,12 +325,15 @@ const listAppointments = async (req, res) => {
       });
     }
 
-    const appointments = await Appointment.find({ userId }).sort({ createdAt: -1 }) ;
+    const appointments = await Appointment.find({ userId }).sort({
+      createdAt: -1,
+    });
 
     if (appointments.length === 0) {
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No appointments found",
+        data: [],
       });
     }
 
@@ -391,10 +395,9 @@ const cancelAppointment = async (req, res) => {
     const slots_booked = doctor.slots_booked || {};
     const appointmentDate =
       slotDate instanceof Date ? slotDate : new Date(slotDate);
-    const normalizedSlotDate =
-      !Number.isNaN(appointmentDate.getTime())
-        ? appointmentDate.toISOString().split("T")[0]
-        : String(slotDate);
+    const normalizedSlotDate = !Number.isNaN(appointmentDate.getTime())
+      ? appointmentDate.toISOString().split("T")[0]
+      : String(slotDate);
     const rawSlotDateKey =
       typeof slotDate === "string" ? slotDate : String(slotDate);
     const slotDateKey = Array.isArray(slots_booked[normalizedSlotDate])
@@ -404,7 +407,9 @@ const cancelAppointment = async (req, res) => {
       ? slots_booked[slotDateKey]
       : [];
 
-    slots_booked[slotDateKey] = existingSlots.filter((time) => time !== slotTime);
+    slots_booked[slotDateKey] = existingSlots.filter(
+      (time) => time !== slotTime,
+    );
 
     await Doctor.findByIdAndUpdate(doctorId, { slots_booked });
 
@@ -422,6 +427,63 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
+// function to get razorpay instance
+const getRazorpayInstance = () => {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+  return new Razorpay({
+    key_id: keyId,
+    key_secret: keySecret,
+  });
+};
+
+// Api to make payment for appointment using razorpay
+const paymentRazorpay = async (req, res) => {
+  try {
+    const razorpayInstance = getRazorpayInstance();
+    
+    const { appointmentId } = req.body;
+
+    if (!appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment || appointment.cancelled) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment cancelled or not found",
+      });
+    }
+
+    // creating options for razorpay order
+    const options = {
+      amount: appointment.amount * 100, // amount in paise
+      currency: process.env.CURRENCY || "INR",
+      receipt: `receipt_${appointmentId}`,
+    };
+
+    // creation of razorpay order
+    const order = await razorpayInstance.orders.create(options);
+
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    console.log("Error in paymentRazorpay controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -430,4 +492,5 @@ export {
   bookAppointment,
   listAppointments,
   cancelAppointment,
+  paymentRazorpay,
 };
