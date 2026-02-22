@@ -13,6 +13,7 @@ const AdminContextProvider = ({ children }) => {
 
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [dashboardData, setDashboardData] = useState({});
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -90,6 +91,29 @@ const AdminContextProvider = ({ children }) => {
     }
   };
 
+  // get dashboard data
+  const getDashboardData = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/admin/dashboard", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      if (data.success) {
+        setDashboardData(data.dashboardData);
+      } else {
+        toast.error(data.message || "Failed to fetch dashboard data");
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to fetch dashboard data",
+      );
+    }
+  };
+
   const value = {
     authToken,
     setAuthToken,
@@ -100,6 +124,9 @@ const AdminContextProvider = ({ children }) => {
     appointments,
     setAppointments,
     getAllAppointments,
+    dashboardData,
+    setDashboardData,
+    getDashboardData,
   };
   return (
     <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

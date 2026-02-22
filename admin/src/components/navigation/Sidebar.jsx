@@ -36,7 +36,7 @@ const Sidebar = ({ isOpen = false, onClose, variant = "mobile" }) => {
             <div className="w-40 h-10">
               <img
                 className="w-full h-full object-contain"
-                src={assets.logo}
+                src={assets.admin_logo}
                 alt="Logo"
               />
             </div>

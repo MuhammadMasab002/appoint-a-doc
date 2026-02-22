@@ -183,8 +183,8 @@ const AddDoctor = () => {
                 required
               >
                 {specialityData.map((item) => (
-                  <option key={item.speciality} value={item.speciality}>
-                    {item.speciality}
+                  <option key={item} value={item}>
+                    {item}
                   </option>
                 ))}
               </select>

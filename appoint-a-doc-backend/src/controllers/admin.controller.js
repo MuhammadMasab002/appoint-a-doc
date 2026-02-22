@@ -1,9 +1,10 @@
-import Doctor from "../models/doctor.model.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import Appointment from "../models/Appointment.model.js";
+import Doctor from "../models/doctor.model.js";
+import User from "../models/user.model.js";
 
 // api for adding doctor
 const addDoctor = async (req, res) => {
@@ -274,4 +275,45 @@ const appointmentCancel = async (req, res) => {
   }
 };
 
-export { addDoctor, adminLogin, AllDoctors, appointmentsAdmin, appointmentCancel };
+// admin dashboard api for getting all doctors, appointments, users list
+const adminDashboard = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({})
+      .select("-email -password")
+      .sort({ createdAt: -1 });
+
+    const appointments = await Appointment.find({}).sort({ createdAt: -1 });
+
+    const users = await User.find({})
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    const dashboardData = {
+      doctors: doctors.length,
+      appointments: appointments.length,
+      users: users.length,
+      latestAppointments: appointments.reverse().slice(0, 5),
+    };
+
+    res.status(200).json({
+      success: true,
+      dashboardData,
+    });
+  } catch (error) {
+    console.error("Error fetching admin dashboard data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export {
+  addDoctor,
+  adminLogin,
+  AllDoctors,
+  appointmentsAdmin,
+  appointmentCancel,
+  adminDashboard,
+};

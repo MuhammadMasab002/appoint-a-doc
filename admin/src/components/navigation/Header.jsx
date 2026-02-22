@@ -42,7 +42,7 @@ const Header = () => {
                 to="/"
                 className="text-xl font-bold text-gray-900 hover:text-primary transition"
               >
-                <img className="w-40 h-auto" src={assets.logo} alt="Logo" />
+                <img className="w-40 h-auto" src={assets.admin_logo} alt="Logo" />
                 {/* Logo<span className="text-primary">here</span> */}
               </Link>
               <button className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-gray-300 cursor-pointer">
