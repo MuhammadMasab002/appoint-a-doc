@@ -3,6 +3,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
+import Appointment from "../models/Appointment.model.js";
 
 // api for adding doctor
 const addDoctor = async (req, res) => {
@@ -173,4 +174,30 @@ const adminLogin = async (req, res) => {
   }
 };
 
-export { addDoctor, adminLogin, AllDoctors };
+// get all appointments for admin
+const appointmentsAdmin = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({}).sort({ createdAt: -1 });
+
+    if (!appointments || appointments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No appointments found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      appointments,
+    });
+  } catch (error) {
+    console.error("Error fetching appointments for admin:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { addDoctor, adminLogin, AllDoctors, appointmentsAdmin };

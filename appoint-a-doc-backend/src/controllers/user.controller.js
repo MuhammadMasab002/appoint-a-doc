@@ -243,7 +243,7 @@ const bookAppointment = async (req, res) => {
       });
     }
     // check if doctor is available or not
-    const doctor = await Doctor.findById(doctorId);
+    const doctor = await Doctor.findById(doctorId).select("-email -password");
 
     if (!doctor) {
       return res.status(404).json({

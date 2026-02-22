@@ -12,6 +12,7 @@ const AdminContextProvider = ({ children }) => {
   );
 
   const [doctors, setDoctors] = useState([]);
+  const [appointments, setAppointments] = useState([]);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -66,6 +67,29 @@ const AdminContextProvider = ({ children }) => {
     }
   };
 
+  // get all appointments for admin
+  const getAllAppointments = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/admin/appointments", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      if (data.success) {
+        setAppointments(data.appointments);
+      } else {
+        toast.error(data.message || "Failed to fetch appointments");
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to fetch appointments",
+      );
+    }
+  };
+
   const value = {
     authToken,
     setAuthToken,
@@ -73,6 +97,9 @@ const AdminContextProvider = ({ children }) => {
     doctors,
     getAllDoctors,
     changeDoctorAvailability,
+    appointments,
+    setAppointments,
+    getAllAppointments,
   };
   return (
     <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

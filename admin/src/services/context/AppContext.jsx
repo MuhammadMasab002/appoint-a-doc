@@ -1,12 +1,20 @@
 import { createContext } from "react";
-import { doctors } from "../../assets/assets";
 
 export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
+  const calculateAge = (dob) => {
+    if (!dob) return 0;
+
+    const today = new Date();
+    const birthDate = new Date(dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    return age;
+  };
 
   const value = {
-    doctors,
+    calculateAge,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

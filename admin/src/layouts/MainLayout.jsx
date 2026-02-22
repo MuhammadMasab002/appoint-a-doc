@@ -7,7 +7,7 @@ export default function MainLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <div className="flex flex-1">
+      <div className="lg:flex flex-1">
         <div className="hidden lg:block">
           <Sidebar variant="desktop" />
         </div>
