@@ -3,9 +3,11 @@ import { AdminContext } from "../../services/context/AdminContext";
 import { useContext } from "react";
 import { useEffect } from "react";
 import { AppContext } from "../../services/context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AllApointments = () => {
-  const { appointments, setAppointments, authToken, getAllAppointments } =
+  const { appointments, backendUrl, authToken, getAllAppointments } =
     useContext(AdminContext);
   const { calculateAge } = useContext(AppContext);
 
@@ -15,8 +17,30 @@ const AllApointments = () => {
     }
   }, [authToken]);
 
-  const handleCancelAppointment = (id) => {
-    setAppointments(appointments.filter((app) => app._id !== id));
+  const handleCancelAppointment = async (id) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/admin/cancel-appointment",
+        { appointmentId: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      if (data.success) {
+        getAllAppointments();
+        toast.success(data.message || "Appointment cancelled successfully");
+      } else {
+        toast.error(data.message || "Failed to cancel appointment");
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to cancel appointment",
+      );
+    }
   };
 
   return (
@@ -92,7 +116,7 @@ const AllApointments = () => {
                 </div>
 
                 {/* Cancel Button */}
-                {appointment.cancelled ? (
+                {!appointment.cancelled ? (
                   <button
                     onClick={() => handleCancelAppointment(appointment._id)}
                     className="w-8 h-8 flex items-center justify-center rounded hover:bg-red-50 transition text-red-400 hover:text-red-600"

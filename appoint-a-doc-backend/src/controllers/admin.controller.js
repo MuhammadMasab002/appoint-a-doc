@@ -200,4 +200,78 @@ const appointmentsAdmin = async (req, res) => {
   }
 };
 
-export { addDoctor, adminLogin, AllDoctors, appointmentsAdmin };
+// cancel appointment
+const appointmentCancel = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    if (!appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment ID is required",
+      });
+    }
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    await Appointment.findByIdAndUpdate(appointmentId, { cancelled: true });
+
+    const { doctorId, slotDate, slotTime } = appointment;
+
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    const slots_booked = doctor.slots_booked || {};
+
+    const appointmentDate =
+      slotDate instanceof Date ? slotDate : new Date(slotDate);
+
+    const normalizedSlotDate = !Number.isNaN(appointmentDate.getTime())
+      ? appointmentDate.toISOString().split("T")[0]
+      : String(slotDate);
+
+    const rawSlotDateKey =
+      typeof slotDate === "string" ? slotDate : String(slotDate);
+
+    const slotDateKey = Array.isArray(slots_booked[normalizedSlotDate])
+      ? normalizedSlotDate
+      : rawSlotDateKey;
+
+    const existingSlots = Array.isArray(slots_booked[slotDateKey])
+      ? slots_booked[slotDateKey]
+      : [];
+
+    slots_booked[slotDateKey] = existingSlots.filter(
+      (time) => time !== slotTime,
+    );
+
+    await Doctor.findByIdAndUpdate(doctorId, { slots_booked });
+
+    res.status(200).json({
+      success: true,
+      message: "Appointment cancelled successfully",
+    });
+  } catch (error) {
+    console.log("Error in cancel Appointment controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { addDoctor, adminLogin, AllDoctors, appointmentsAdmin, appointmentCancel };
