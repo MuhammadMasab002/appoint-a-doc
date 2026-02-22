@@ -442,7 +442,7 @@ const getRazorpayInstance = () => {
 const paymentRazorpay = async (req, res) => {
   try {
     const razorpayInstance = getRazorpayInstance();
-    
+
     const { appointmentId } = req.body;
 
     if (!appointmentId) {
@@ -484,6 +484,44 @@ const paymentRazorpay = async (req, res) => {
   }
 };
 
+// verify payment for appointment using razorpay
+const verifyPaymentRazorpay = async (req, res) => {
+  try {
+    const { razorpay_order_id } = req.body;
+    if (!razorpay_order_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
+
+    const razorpayInstance = getRazorpayInstance();
+
+    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+
+    if (orderInfo.status === "paid") {
+      await Appointment.findByIdAndUpdate(orderInfo.receipt, { payment: true });
+
+      return res.status(200).json({
+        success: true,
+        message: "Payment verified successfully",
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Payment verification failed",
+      });
+    }
+  } catch (error) {
+    console.log("Error in verifyPaymentRazorpay controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -493,4 +531,5 @@ export {
   listAppointments,
   cancelAppointment,
   paymentRazorpay,
+  verifyPaymentRazorpay,
 };

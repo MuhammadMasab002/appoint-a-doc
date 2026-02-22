@@ -98,10 +98,28 @@ const MyAppointments = () => {
       order_id: order.orderId,
       receipt: order.receipt,
       handler: async (response) => {
-        // Handle successful payment here (e.g., verify payment on the server)
-        console.log("Payment successful:", response);
-        toast.success("Payment successful!");
-        fetchAppointments(); // Refresh appointments to reflect payment status
+        try {
+          const { data } = await axios.post(
+            backendUrl + "/user/verify-payment-razorpay",
+            { response },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+          if (data.success) {
+            toast.success("Payment verified successfully!");
+            fetchAppointments();
+            navigate("/my-appointments");
+          } else {
+            toast.error(data.message || "Failed to verify payment");
+          }
+        } catch (error) {
+          toast.error(
+            error.response?.data?.message || "Failed to verify payment",
+          );
+        }
       },
     };
     var rzp = new window.Razorpay(options);
@@ -280,7 +298,7 @@ const MyAppointments = () => {
                             fullWidth={false}
                             className="border-2 border-gray-300 text-gray-700 hover:bg-red-600 hover:text-white hover:border-red-600 px-6"
                           />
-                          {!appointment.cancelled && !appointment.payment ? (
+                          {!appointment.payment ? (
                             <CustomButton
                               text="Pay Online"
                               onClick={() => handlePayOnline(appointment._id)}
