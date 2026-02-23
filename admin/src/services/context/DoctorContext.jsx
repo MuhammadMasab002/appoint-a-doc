@@ -25,7 +25,8 @@ const DoctorContextProvider = ({ children }) => {
         },
       });
       if (data.success) {
-        setAppointments(data.appointments.reverse());
+        // setAppointments(data.appointments.reverse());
+        setAppointments(data.appointments);
       } else {
         toast.error(data.message || "Failed to fetch appointments");
       }
@@ -39,12 +40,70 @@ const DoctorContextProvider = ({ children }) => {
     }
   };
 
+  // complete appointment
+  const completeAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/doctor/complete-appointment`,
+        { appointmentId },
+        {
+          headers: {
+            Authorization: `Bearer ${doctorToken}`,
+          },
+        },
+      );
+      if (data.success) {
+        getDoctorAppointments();
+        toast.success(data.message || "Appointment marked as completed");
+      } else {
+        toast.error(data.message || "Failed to complete appointment");
+      }
+    } catch (error) {
+      console.error("Error completing appointment:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to complete appointment",
+      );
+    }
+  };
+
+  // cancel appointment
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/doctor/cancel-appointment`,
+        { appointmentId },
+        {
+          headers: {
+            Authorization: `Bearer ${doctorToken}`,
+          },
+        },
+      );
+      if (data.success) {
+        getDoctorAppointments();
+        toast.success(data.message || "Appointment cancelled successfully");
+      } else {
+        toast.error(data.message || "Failed to cancel appointment");
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to cancel appointment",
+      );
+    }
+  };
+
   const value = {
     doctorToken,
     setDoctorToken,
     appointments,
     setAppointments,
     getDoctorAppointments,
+    completeAppointment,
+    cancelAppointment,
   };
   return (
     <DoctorContext.Provider value={value}>{children}</DoctorContext.Provider>

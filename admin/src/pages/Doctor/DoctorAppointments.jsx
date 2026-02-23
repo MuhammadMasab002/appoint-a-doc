@@ -6,8 +6,13 @@ import { AppContext } from "../../services/context/AppContext";
 import { assets } from "../../assets/assets";
 
 const DoctorAppointments = () => {
-  const { doctorToken, appointments, getDoctorAppointments } =
-    useContext(DoctorContext);
+  const {
+    doctorToken,
+    appointments,
+    getDoctorAppointments,
+    completeAppointment,
+    cancelAppointment,
+  } = useContext(DoctorContext);
   const { calculateAge } = useContext(AppContext);
 
   useEffect(() => {
@@ -16,8 +21,12 @@ const DoctorAppointments = () => {
     }
   }, [doctorToken]);
 
-  const handleCancelAppointment = async (id) => {
-    alert("Cancel appointment with ID: " + id);
+  const handleCancelAppointment = async (appointmentId) => {
+    await cancelAppointment(appointmentId);
+  };
+
+  const handleCompleteAppointment = async (appointmentId) => {
+    await completeAppointment(appointmentId);
   };
 
   return (
@@ -31,7 +40,7 @@ const DoctorAppointments = () => {
       <div className="w-full bg-white rounded border border-gray-200">
         <div className="w-full overflow-x-auto">
           {/* Table Header */}
-          <div className="min-w-[760px] grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col gap-4 px-6 py-4 bg-blue-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+          <div className="min-w-190 grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col gap-4 px-6 py-4 bg-blue-50 border-b border-gray-200 text-sm font-medium text-gray-700">
             <div>#</div>
             <div>Patient</div>
             <div>Payment</div>
@@ -43,7 +52,7 @@ const DoctorAppointments = () => {
 
           {/* Table Body */}
           <div className="divide-y divide-gray-100 min-w-190">
-            {appointments?.map((appointment, index) => (
+            {appointments?.reverse().map((appointment, index) => (
               <div
                 key={appointment._id}
                 className="grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] gap-4 px-6 py-4 items-center text-sm hover:bg-gray-50 transition"
@@ -93,7 +102,21 @@ const DoctorAppointments = () => {
                 </div>
 
                 {/* Cancel Button */}
-                {!appointment.cancelled ? (
+                {appointment.cancelled ? (
+                  <div
+                    className="w-8 h-8 flex items-center justify-center rounded text-red-400"
+                    title="Active appointment"
+                  >
+                    Cancelled
+                  </div>
+                ) : appointment.isCompleted ? (
+                  <div
+                    className="w-8 h-8 flex items-center justify-center rounded text-green-400"
+                    title="Completed"
+                  >
+                    Completed
+                  </div>
+                ) : (
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleCancelAppointment(appointment._id)}
@@ -102,20 +125,14 @@ const DoctorAppointments = () => {
                     >
                       <img src={assets.cancel_icon} alt="cancel icon" />
                     </button>
+
                     <button
-                      // onClick={() => handleCompleteAppointment(appointment._id)}
+                      onClick={() => handleCompleteAppointment(appointment._id)}
                       className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-green-400 hover:text-green-600"
                       title="Complete appointment"
                     >
                       <img src={assets.tick_icon} alt="tick icon" />
                     </button>
-                  </div>
-                ) : (
-                  <div
-                    className="w-8 h-8 flex items-center justify-center rounded text-red-400"
-                    title="Active appointment"
-                  >
-                    Cancelled
                   </div>
                 )}
               </div>
