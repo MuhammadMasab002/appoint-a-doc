@@ -14,7 +14,7 @@ const Footer = () => {
           <div>
             <h3 className="text-2xl font-bold">
               <Link to="/">
-                <img className="w-40 h-auto" src={assets.logo} alt="Logo" />
+                <img className="w-40 h-auto" src={assets.admin_logo} alt="Logo" />
               </Link>
             </h3>
             <p className="text-gray-500 mt-4">Subscribe</p>

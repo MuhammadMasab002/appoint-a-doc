@@ -5,9 +5,15 @@ import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import CustomButton, {
   BUTTON_VARIANTS,
 } from "../components/common/buttons/CustomButton";
+import { AdminContext } from "../services/context/AdminContext";
+import { DoctorContext } from "../services/context/DoctorContext";
+import { useContext } from "react";
 
 const NotFound = () => {
   const navigate = useNavigate();
+
+  const { authToken } = useContext(AdminContext);
+  const { doctorToken } = useContext(DoctorContext);
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col">
@@ -43,7 +49,15 @@ const NotFound = () => {
           text="Back to Home"
           variant={BUTTON_VARIANTS.PRIMARY}
           fullWidth={false}
-          onClick={() => navigate("/")}
+          onClick={() =>
+            navigate(
+              authToken
+                ? "/admin-dashboard"
+                : doctorToken
+                  ? "/doctor-dashboard"
+                  : "/login",
+            )
+          }
         />
       </div>
     </div>

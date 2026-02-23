@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
 import MainLayout from "./layouts/MainLayout";
 import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
@@ -13,6 +12,9 @@ import AddDoctor from "./pages/Admin/AddDoctor";
 import DoctorList from "./pages/Admin/DoctorList";
 import AllApointments from "./pages/Admin/AllApointments";
 import { DoctorContext } from "./services/context/DoctorContext";
+import DoctorProfile from "./pages/Doctor/DoctorProfile";
+import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
+import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
 
 function App() {
   const { authToken } = useContext(AdminContext);
@@ -22,23 +24,39 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-        {
-          // If authToken exists, user is logged in, else show login page
-          // This is a simple client-side check. In a real app, you should also verify the token's validity with the backend.
-          authToken || doctorToken ? (
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/admin-dashboard" element={<Dashboard />} />
-              <Route path="/add-doctor" element={<AddDoctor />} />
-              <Route path="/doctor-list" element={<DoctorList />} />
-              <Route path="/all-appointments" element={<AllApointments />} />
+        {/* If authToken exists, user is logged in, else show login page
+        This is a simple client-side check. In a real app, you should also verify the token's validity with the backend. */}
+        {authToken || doctorToken ? (
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<></>} />
+            {/* Admin routes */}
+            {authToken && (
+              <>
+                <Route path="/admin-dashboard" element={<Dashboard />} />
+                <Route path="/add-doctor" element={<AddDoctor />} />
+                <Route path="/doctor-list" element={<DoctorList />} />
+                <Route path="/all-appointments" element={<AllApointments />} />
+              </>
+            )}
 
-              {/* <Route path="*" element={<NotFound />} /> */}
-            </Route>
-          ) : (
-            <Route path="/login" element={<SignIn />} />
-          )
-        }
+            {/* Doctor routes */}
+            {doctorToken && (
+              <>
+                <Route path="/doctor-profile" element={<DoctorProfile />} />
+                <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+                <Route
+                  path="/doctor-appointments"
+                  element={<DoctorAppointments />}
+                />
+              </>
+            )}
+
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        ) : (
+          <Route path="/login" element={<SignIn />} />
+        )}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer
         position="top-right"

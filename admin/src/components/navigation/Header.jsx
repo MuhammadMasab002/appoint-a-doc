@@ -6,6 +6,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Sidebar from "./Sidebar";
 import { assets } from "../../assets/assets";
 import { AdminContext } from "../../services/context/AdminContext";
+import { DoctorContext } from "../../services/context/DoctorContext";
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -13,12 +14,18 @@ const Header = () => {
   const navigate = useNavigate();
 
   const { authToken, setAuthToken } = useContext(AdminContext);
+  const { doctorToken, setDoctorToken } = useContext(DoctorContext);
   // const user = null;
 
   const handleLogout = () => {
-    // logout api call can be added here
+    // logout api call for admin
     authToken && setAuthToken(null);
     authToken && localStorage.removeItem("adminToken");
+
+    // logout api call for doctor
+    doctorToken && setDoctorToken(null);
+    doctorToken && localStorage.removeItem("doctorToken");
+
     navigate("/login");
   };
 
@@ -42,7 +49,11 @@ const Header = () => {
                 to="/"
                 className="text-xl font-bold text-gray-900 hover:text-primary transition"
               >
-                <img className="w-40 h-auto" src={assets.admin_logo} alt="Logo" />
+                <img
+                  className="w-40 h-auto"
+                  src={assets.admin_logo}
+                  alt="Logo"
+                />
                 {/* Logo<span className="text-primary">here</span> */}
               </Link>
               <button className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-gray-300 cursor-pointer">
