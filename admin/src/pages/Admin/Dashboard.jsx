@@ -16,7 +16,7 @@ const Dashboard = () => {
 
   const handleCancelAppointment = (id) => {
     // Implement cancellation logic here
-    console.log("Cancel appointment with ID:", id);
+    alert("Cancel appointment with ID: " + id);
   };
 
   return (
@@ -81,7 +81,7 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-3">
-          {latestAppointments.map((appointment) => (
+          {latestAppointments?.map((appointment) => (
             <div
               key={appointment._id}
               className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 rounded px-2 transition"
@@ -102,19 +102,33 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => handleCancelAppointment(appointment._id)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition text-red-400 hover:text-red-600"
-                title="Cancel appointment"
-              >
-                ✕
-              </button>
+              {appointment.cancelled ? (
+                <div
+                  className={`text-[10px] font-medium px-2 py-1 rounded-full text-center bg-gray100 border border-red-600 text-red-600`}
+                >
+                  Cancelled
+                </div>
+              ) : appointment.isCompleted ? (
+                <div
+                  className={`text-[10px] font-medium px-2 py-1 rounded-full text-center bg-gray100 border border-green-600 text-green-600`}
+                >
+                  Completed
+                </div>
+              ) : (
+                <button
+                  onClick={() => handleCancelAppointment(appointment._id)}
+                  className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-red-400 hover:text-red-600"
+                  title="Cancel appointment"
+                >
+                  <img src={assets.cancel_icon} alt="cancel icon" />
+                </button>
+              )}
             </div>
           ))}
         </div>
 
         {/* Empty State */}
-        {latestAppointments.length === 0 && (
+        {latestAppointments?.length === 0 && (
           <div className="py-12 text-center text-gray-500 text-sm">
             No appointments yet
           </div>

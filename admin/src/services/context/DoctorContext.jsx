@@ -15,6 +15,7 @@ const DoctorContextProvider = ({ children }) => {
   );
 
   const [appointments, setAppointments] = useState([]);
+  const [dashboardData, setDashboardData] = useState(null);
 
   // get all doctor appointments and set in state
   const getDoctorAppointments = async () => {
@@ -96,6 +97,29 @@ const DoctorContextProvider = ({ children }) => {
     }
   };
 
+  // get doctor dashboard data
+  const getDoctorDashboardData = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/doctor/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${doctorToken}`,
+        },
+      });
+      if (data.success) {
+        setDashboardData(data.dashboardData);
+      } else {
+        toast.error(data.message || "Failed to fetch dashboard data");
+      }
+    } catch (error) {
+      console.error("Error fetching doctor dashboard data:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to fetch dashboard data",
+      );
+    }
+  };
+
   const value = {
     doctorToken,
     setDoctorToken,
@@ -104,6 +128,8 @@ const DoctorContextProvider = ({ children }) => {
     getDoctorAppointments,
     completeAppointment,
     cancelAppointment,
+    dashboardData,
+    getDoctorDashboardData,
   };
   return (
     <DoctorContext.Provider value={value}>{children}</DoctorContext.Provider>

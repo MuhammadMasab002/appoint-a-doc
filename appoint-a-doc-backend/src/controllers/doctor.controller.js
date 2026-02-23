@@ -230,6 +230,56 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
+// doctor dashboard apis
+const doctorDashboard = async (req, res) => {
+  try {
+    const { doctorId } = req.body;
+    if (!doctorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor ID is required",
+      });
+    }
+
+    const allAppointments = await Appointment.find({ doctorId });
+
+    let earnings = 0;
+
+    allAppointments?.map((item) => {
+      if (item.isCompleted || item.payment) {
+        earnings += item.amount;
+      }
+    });
+
+    let patients = [];
+
+    allAppointments?.map((item) => {
+      if (!patients.includes(item.userId)) {
+        patients.push(item.userId);
+      }
+    });
+
+    const dashboardData = {
+      earnings,
+      appointments: allAppointments.length,
+      patients: patients.length,
+      latestAppointments: allAppointments.reverse().slice(0, 5),
+    };
+
+    res.status(200).json({
+      success: true,
+      dashboardData,
+    });
+  } catch (error) {
+    console.error("Error in doctor dashboard:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 export {
   changeAvalibility,
   doctorList,
@@ -237,4 +287,5 @@ export {
   doctorAppointments,
   completeAppointment,
   cancelAppointment,
+  doctorDashboard,
 };
