@@ -9,11 +9,13 @@ import CustomFormInput, {
 import axios from "axios";
 import { AdminContext } from "../services/context/AdminContext";
 import { toast } from "react-toastify";
+import { DoctorContext } from "../services/context/DoctorContext";
 
 const SignIn = () => {
   const navigate = useNavigate();
 
   const { setAuthToken, backendUrl } = useContext(AdminContext);
+  const { setDoctorToken } = useContext(DoctorContext);
 
   // state for admin login / doctor login
   const [isAdminLogin, setIsAdminLogin] = useState(true);
@@ -82,18 +84,29 @@ const SignIn = () => {
           email,
           password,
         });
-        console.log("Admin login response:", data);
+
         if (data.success) {
-          console.log("Admin login response:", data);
           localStorage.setItem("adminToken", data.token);
           setAuthToken(data.token);
           // navigate("/dashboard");
           navigate("/");
         }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/doctor/login`, {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          localStorage.setItem("doctorToken", data.token);
+          setDoctorToken(data.token);
+          // navigate("/dashboard");
+          navigate("/");
+        }
       }
     } catch (err) {
-      console.error("Admin login error:", err);
-      toast.error(err.response?.data?.message || "Admin login failed");
+      console.error("Login error:", err);
+      toast.error(err.response?.data?.message || "Login failed");
       setErrors({ ...errors, password: "Invalid email or password" });
     }
   };
@@ -149,9 +162,17 @@ const SignIn = () => {
                 text="click here"
                 type="button"
                 variant={BUTTON_VARIANTS.TEXT_PRIMARY}
-                className="!py-0 !px-1"
+                className="py-0! px-1!"
                 fullWidth={false}
-                onClick={() => setIsAdminLogin(!isAdminLogin)}
+                onClick={() => {
+                  setIsAdminLogin(!isAdminLogin);
+                  setFormData({
+                    email: !isAdminLogin
+                      ? "admin@admin.com"
+                      : "doctor1@doctor.com",
+                    password: !isAdminLogin ? "admin1234" : "12345678",
+                  });
+                }}
               />
             </div>
           </form>

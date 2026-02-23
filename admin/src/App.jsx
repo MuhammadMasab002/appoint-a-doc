@@ -12,9 +12,11 @@ import Dashboard from "./pages/Admin/Dashboard";
 import AddDoctor from "./pages/Admin/AddDoctor";
 import DoctorList from "./pages/Admin/DoctorList";
 import AllApointments from "./pages/Admin/AllApointments";
+import { DoctorContext } from "./services/context/DoctorContext";
 
 function App() {
   const { authToken } = useContext(AdminContext);
+  const { doctorToken } = useContext(DoctorContext);
 
   return (
     <>
@@ -23,7 +25,7 @@ function App() {
         {
           // If authToken exists, user is logged in, else show login page
           // This is a simple client-side check. In a real app, you should also verify the token's validity with the backend.
-          authToken ? (
+          authToken || doctorToken ? (
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/admin-dashboard" element={<Dashboard />} />

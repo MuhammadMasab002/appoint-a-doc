@@ -1,10 +1,16 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
-import { NAV_ITEMS } from "../../constants/navigation";
+import { ADMIN_NAV_ITEMS, DOCTOR_NAV_ITEMS } from "../../constants/navigation";
 import { assets } from "../../assets/assets";
+import { AdminContext } from "../../services/context/AdminContext";
+import { useContext } from "react";
+import { DoctorContext } from "../../services/context/DoctorContext";
 
 const Sidebar = ({ isOpen = false, onClose, variant = "mobile" }) => {
+  const { authToken } = useContext(AdminContext);
+  const { doctorToken } = useContext(DoctorContext);
+
   const isDesktop = variant === "desktop";
   const isVisible = isDesktop ? true : isOpen;
 
@@ -51,25 +57,48 @@ const Sidebar = ({ isOpen = false, onClose, variant = "mobile" }) => {
         )}
 
         {/* Navigation */}
-        <nav className="flex flex-col p-4 gap-2">
-          {NAV_ITEMS?.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `relative px-4 py-3 rounded-lg text-sm font-medium transition
+        {authToken && (
+          <nav className="flex flex-col p-4 gap-2">
+            {ADMIN_NAV_ITEMS?.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `relative px-4 py-3 rounded-lg text-sm font-medium transition
                 ${
                   isActive
                     ? "bg-primary/10 text-primary border-l-4 border-primary pl-3"
                     : "text-gray-700 hover:bg-gray-100"
                 }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        )}
+        {doctorToken && (
+          <nav className="flex flex-col p-4 gap-2">
+            {DOCTOR_NAV_ITEMS?.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `relative px-4 py-3 rounded-lg text-sm font-medium transition
+                ${
+                  isActive
+                    ? "bg-primary/10 text-primary border-l-4 border-primary pl-3"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        )}
       </aside>
     </>
   );
