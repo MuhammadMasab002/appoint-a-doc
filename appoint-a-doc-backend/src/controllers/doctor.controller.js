@@ -1,6 +1,7 @@
-import Doctor from "../models/doctor.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Appointment from "../models/Appointment.model.js";
+import Doctor from "../models/doctor.model.js";
 
 const changeAvalibility = async (req, res) => {
   try {
@@ -81,7 +82,10 @@ const doctorLogin = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ doctorId: doctor._id }, process.env.JWT_SECRET_KEY);
+    const token = jwt.sign(
+      { doctorId: doctor._id },
+      process.env.JWT_SECRET_KEY,
+    );
 
     res.status(200).json({
       success: true,
@@ -98,4 +102,40 @@ const doctorLogin = async (req, res) => {
   }
 };
 
-export { changeAvalibility, doctorList, doctorLogin };
+// api to get all doctor appointments
+const doctorAppointments = async (req, res) => {
+  try {
+    const { doctorId } = req.body;
+
+    if (!doctorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor ID is required",
+      });
+    }
+
+    const appointments = await Appointment.find({ doctorId });
+
+    if (!appointments || appointments.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No appointments found for this doctor",
+        appointments: [],
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      appointments,
+    });
+  } catch (error) {
+    console.error("Error fetching doctor appointments:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { changeAvalibility, doctorList, doctorLogin, doctorAppointments };
