@@ -54,7 +54,7 @@ const DoctorContextProvider = ({ children }) => {
         },
       );
       if (data.success) {
-        getDoctorAppointments();
+        await getDoctorAppointments();
         toast.success(data.message || "Appointment marked as completed");
       } else {
         toast.error(data.message || "Failed to complete appointment");
@@ -82,7 +82,7 @@ const DoctorContextProvider = ({ children }) => {
         },
       );
       if (data.success) {
-        getDoctorAppointments();
+        await getDoctorAppointments();
         toast.success(data.message || "Appointment cancelled successfully");
       } else {
         toast.error(data.message || "Failed to cancel appointment");

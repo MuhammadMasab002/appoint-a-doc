@@ -3,11 +3,10 @@ import { AdminContext } from "../../services/context/AdminContext";
 import { useContext } from "react";
 import { useEffect } from "react";
 import { AppContext } from "../../services/context/AppContext";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { assets } from "../../assets/assets";
 
 const AllApointments = () => {
-  const { appointments, backendUrl, authToken, getAllAppointments } =
+  const { appointments, cancelAppointment, authToken, getAllAppointments } =
     useContext(AdminContext);
   const { calculateAge } = useContext(AppContext);
 
@@ -17,30 +16,16 @@ const AllApointments = () => {
     }
   }, [authToken]);
 
-  const handleCancelAppointment = async (id) => {
-    try {
-      const { data } = await axios.post(
-        backendUrl + "/admin/cancel-appointment",
-        { appointmentId: id },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-        },
-      );
-      if (data.success) {
-        getAllAppointments();
-        toast.success(data.message || "Appointment cancelled successfully");
-      } else {
-        toast.error(data.message || "Failed to cancel appointment");
-      }
-    } catch (error) {
-      console.error("Error cancelling appointment:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to cancel appointment",
-      );
+  // handle cancel appointment
+  const handleCancelAppointment = async (appointmentId) => {
+    if (authToken) {
+      await cancelAppointment(appointmentId);
     }
+  };
+
+  // handle complete appointment
+  const handleCompleteAppointment = async (appointmentId) => {
+    alert("Complete appointment with ID: " + appointmentId);
   };
 
   return (
@@ -54,7 +39,7 @@ const AllApointments = () => {
       <div className="w-full bg-white rounded border border-gray-200">
         <div className="w-full overflow-x-auto">
           {/* Table Header */}
-          <div className="min-w-[760px] grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col gap-4 px-6 py-4 bg-blue-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+          <div className="min-w-190 grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col gap-4 px-6 py-4 bg-blue-50 border-b border-gray-200 text-sm font-medium text-gray-700">
             <div>#</div>
             <div>Patient</div>
             <div>Age</div>
@@ -65,7 +50,7 @@ const AllApointments = () => {
           </div>
 
           {/* Table Body */}
-          <div className="divide-y divide-gray-100 min-w-[760px]">
+          <div className="divide-y divide-gray-100 min-w-190">
             {appointments?.map((appointment, index) => (
               <div
                 key={appointment._id}
@@ -116,20 +101,37 @@ const AllApointments = () => {
                 </div>
 
                 {/* Cancel Button */}
-                {!appointment.cancelled ? (
-                  <button
-                    onClick={() => handleCancelAppointment(appointment._id)}
-                    className="w-8 h-8 flex items-center justify-center rounded hover:bg-red-50 transition text-red-400 hover:text-red-600"
-                    title="Cancel appointment"
-                  >
-                    ✕
-                  </button>
-                ) : (
+                {appointment.cancelled ? (
                   <div
                     className="w-8 h-8 flex items-center justify-center rounded text-red-400"
                     title="Active appointment"
                   >
                     Cancelled
+                  </div>
+                ) : appointment.isCompleted ? (
+                  <div
+                    className="w-8 h-8 flex items-center justify-center rounded text-green-400"
+                    title="Completed"
+                  >
+                    Completed
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleCancelAppointment(appointment._id)}
+                      className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-red-400 hover:text-red-600"
+                      title="Cancel appointment"
+                    >
+                      <img src={assets.cancel_icon} alt="cancel icon" />
+                    </button>
+
+                    <button
+                      onClick={() => handleCompleteAppointment(appointment._id)}
+                      className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-green-400 hover:text-green-600"
+                      title="Complete appointment"
+                    >
+                      <img src={assets.tick_icon} alt="tick icon" />
+                    </button>
                   </div>
                 )}
               </div>

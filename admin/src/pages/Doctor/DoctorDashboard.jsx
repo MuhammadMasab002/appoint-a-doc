@@ -3,21 +3,34 @@ import { DoctorContext } from "../../services/context/DoctorContext";
 import { assets } from "../../assets/assets";
 
 const DoctorDashboard = () => {
-  const { doctorToken, dashboardData, getDoctorDashboardData } =
-    useContext(DoctorContext);
+  const {
+    doctorToken,
+    dashboardData,
+    getDoctorDashboardData,
+    completeAppointment,
+    cancelAppointment,
+  } = useContext(DoctorContext);
 
   useEffect(() => {
     if (doctorToken) {
       getDoctorDashboardData();
     }
-  }, [doctorToken]);
+  }, [doctorToken, dashboardData]);
 
   const latestAppointments = dashboardData?.latestAppointments || [];
 
   // handle cancel appointment
-  const handleCancelAppointment = (id) => {
-    // Implement cancellation logic here
-    alert("Cancel appointment with ID: " + id);
+  const handleCancelAppointment = async (appointmentId) => {
+    if (doctorToken) {
+      await cancelAppointment(appointmentId);
+    }
+  };
+
+  // handle complete appointment
+  const handleCompleteAppointment = async (appointmentId) => {
+    if (doctorToken) {
+      await completeAppointment(appointmentId);
+    }
   };
 
   return (
@@ -103,26 +116,39 @@ const DoctorDashboard = () => {
                   </p>
                 </div>
               </div>
+              {/* Cancel Button */}
               {appointment.cancelled ? (
                 <div
-                  className={`text-[10px] font-medium px-2 py-1 rounded-full text-center bg-gray100 border border-red-600 text-red-600`}
+                  className="w-8 h-8 flex items-center justify-center rounded text-red-400"
+                  title="Active appointment"
                 >
                   Cancelled
                 </div>
               ) : appointment.isCompleted ? (
                 <div
-                  className={`text-[10px] font-medium px-2 py-1 rounded-full text-center bg-gray100 border border-green-600 text-green-600`}
+                  className="w-8 h-8 flex items-center justify-center rounded text-green-400"
+                  title="Completed"
                 >
                   Completed
                 </div>
               ) : (
-                <button
-                  onClick={() => handleCancelAppointment(appointment._id)}
-                  className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-red-400 hover:text-red-600"
-                  title="Cancel appointment"
-                >
-                  <img src={assets.cancel_icon} alt="cancel icon" />
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleCancelAppointment(appointment._id)}
+                    className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-red-400 hover:text-red-600"
+                    title="Cancel appointment"
+                  >
+                    <img src={assets.cancel_icon} alt="cancel icon" />
+                  </button>
+
+                  <button
+                    onClick={() => handleCompleteAppointment(appointment._id)}
+                    className="w-8 h-8 pt-1 overflow-hidden flex items-center justify-center rounded-full cursor-pointer transition text-green-400 hover:text-green-600"
+                    title="Complete appointment"
+                  >
+                    <img src={assets.tick_icon} alt="tick icon" />
+                  </button>
+                </div>
               )}
             </div>
           ))}

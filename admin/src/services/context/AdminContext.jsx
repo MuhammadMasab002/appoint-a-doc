@@ -91,6 +91,34 @@ const AdminContextProvider = ({ children }) => {
     }
   };
 
+  // cancel appointment
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/admin/cancel-appointment",
+        { appointmentId },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      if (data.success) {
+        await getAllAppointments(); // Refresh the list of appointments after cancelling
+        toast.success(data.message || "Appointment cancelled successfully");
+      } else {
+        toast.error(data.message || "Failed to cancel appointment");
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to cancel appointment",
+      );
+    }
+  };
+
   // get dashboard data
   const getDashboardData = async () => {
     try {
@@ -124,6 +152,7 @@ const AdminContextProvider = ({ children }) => {
     appointments,
     setAppointments,
     getAllAppointments,
+    cancelAppointment,
     dashboardData,
     setDashboardData,
     getDashboardData,
