@@ -138,4 +138,103 @@ const doctorAppointments = async (req, res) => {
   }
 };
 
-export { changeAvalibility, doctorList, doctorLogin, doctorAppointments };
+// api to complete appointment
+const completeAppointment = async (req, res) => {
+  try {
+    const { doctorId, appointmentId } = req.body;
+
+    if (!appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment ID is required",
+      });
+    }
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    if (appointment && appointment.doctorId === doctorId) {
+      await Appointment.findByIdAndUpdate(appointmentId, {
+        isCompleted: true,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Appointment marked as completed",
+      });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Mark failed: Unauthorized",
+      });
+    }
+  } catch (error) {
+    console.error("Error completing appointment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+// api to cancel appointment
+const cancelAppointment = async (req, res) => {
+  try {
+    const { doctorId, appointmentId } = req.body;
+
+    if (!appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment ID is required",
+      });
+    }
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    if (appointment && appointment.doctorId === doctorId) {
+      await Appointment.findByIdAndUpdate(appointmentId, {
+        cancelled: true,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Appointment marked as cancelled",
+      });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Mark failed: Unauthorized",
+      });
+    }
+  } catch (error) {
+    console.error("Error cancelling appointment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export {
+  changeAvalibility,
+  doctorList,
+  doctorLogin,
+  doctorAppointments,
+  completeAppointment,
+  cancelAppointment,
+};
