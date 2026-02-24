@@ -16,6 +16,7 @@ const DoctorContextProvider = ({ children }) => {
 
   const [appointments, setAppointments] = useState([]);
   const [dashboardData, setDashboardData] = useState(null);
+  const [doctorData, setDoctorData] = useState(null);
 
   // get all doctor appointments and set in state
   const getDoctorAppointments = async () => {
@@ -120,6 +121,62 @@ const DoctorContextProvider = ({ children }) => {
     }
   };
 
+  // get doctor profile data
+  const getDoctorProfileData = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/doctor/profile`, {
+        headers: {
+          Authorization: `Bearer ${doctorToken}`,
+        },
+      });
+
+      if (data.success) {
+        setDoctorData(data.profileData);
+      } else {
+        toast.error(data.message || "Failed to fetch doctor profile");
+      }
+    } catch (error) {
+      console.error("Error fetching doctor profile:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to fetch doctor profile",
+      );
+    }
+  };
+
+  // update doctor profile data
+  const updateDoctorProfileData = async (updatedData) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/doctor/update-profile`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${doctorToken}`,
+          },
+        },
+      );
+
+      if (data.success) {
+        await getDoctorProfileData();
+        toast.success(data.message || "Profile updated successfully");
+        return true;
+      }
+
+      toast.error(data.message || "Failed to update doctor profile");
+      return false;
+    } catch (error) {
+      console.error("Error updating doctor profile:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to update doctor profile",
+      );
+      return false;
+    }
+  };
+
   const value = {
     doctorToken,
     setDoctorToken,
@@ -130,6 +187,9 @@ const DoctorContextProvider = ({ children }) => {
     cancelAppointment,
     dashboardData,
     getDoctorDashboardData,
+    doctorData,
+    getDoctorProfileData,
+    updateDoctorProfileData,
   };
   return (
     <DoctorContext.Provider value={value}>{children}</DoctorContext.Provider>
