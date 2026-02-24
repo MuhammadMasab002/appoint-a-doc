@@ -280,6 +280,76 @@ const doctorDashboard = async (req, res) => {
   }
 };
 
+// doctor profile api
+const doctorProfile = async (req, res) => {
+  try {
+    const { doctorId } = req.body;
+    if (!doctorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor ID is required",
+      });
+    }
+
+    const doctor = await Doctor.findById(doctorId).select("-password");
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      profileData: doctor,
+    });
+  } catch (error) {
+    console.error("Error fetching doctor profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+// update doctor profile api
+const updateDoctorProfile = async (req, res) => {
+  try {
+    const { doctorId, availability, fees, address } = req.body;
+
+    if (!doctorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor ID is required",
+      });
+    }
+
+    await Doctor.findByIdAndUpdate(
+      doctorId,
+      {
+        availability,
+        fees,
+        address,
+      },
+      { new: true },
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Doctor profile updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating doctor profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 export {
   changeAvalibility,
   doctorList,
@@ -288,4 +358,6 @@ export {
   completeAppointment,
   cancelAppointment,
   doctorDashboard,
+  doctorProfile,
+  updateDoctorProfile,
 };
