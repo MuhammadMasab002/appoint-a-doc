@@ -21,8 +21,8 @@ const SignIn = () => {
   const [isAdminLogin, setIsAdminLogin] = useState(true);
 
   const [formData, setFormData] = useState({
-    email: "admin@admin.com",
-    password: "admin1234",
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({
@@ -162,15 +162,7 @@ const SignIn = () => {
                 variant={BUTTON_VARIANTS.TEXT_PRIMARY}
                 className="py-0! px-1!"
                 fullWidth={false}
-                onClick={() => {
-                  setIsAdminLogin(!isAdminLogin);
-                  setFormData({
-                    email: !isAdminLogin
-                      ? "admin@admin.com"
-                      : "doctor1@doctor.com",
-                    password: !isAdminLogin ? "admin1234" : "12345678",
-                  });
-                }}
+                onClick={() => setIsAdminLogin(!isAdminLogin)}
               />
             </div>
           </form>

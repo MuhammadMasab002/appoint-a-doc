@@ -285,7 +285,7 @@ const MyAppointments = () => {
 
                     {/* Action Buttons */}
                     <div className="flex flex-col justify-center gap-3 lg:min-w-50">
-                      {appointment.cancelled ? (
+                      {appointment.cancelled && !appointment.isCompleted ? (
                         <CustomButton
                           text="Appointment cancelled"
                           disabled={true}
@@ -293,7 +293,7 @@ const MyAppointments = () => {
                           fullWidth={false}
                           className="border-2 border-red-400 text-red-500 cursor-not-allowed px-6"
                         />
-                      ) : (
+                      ) : !appointment.cancelled && !appointment.isCompleted ? (
                         <>
                           <CustomButton
                             text="Cancel appointment"
@@ -304,7 +304,7 @@ const MyAppointments = () => {
                             fullWidth={false}
                             className="border-2 border-gray-300 text-gray-700 hover:bg-red-600 hover:text-white hover:border-red-600 px-6"
                           />
-                          {!appointment.payment ? (
+                          {!appointment.payment && !appointment.isCompleted ? (
                             <CustomButton
                               text="Pay Online"
                               onClick={() => handlePayOnline(appointment._id)}
@@ -313,17 +313,30 @@ const MyAppointments = () => {
                               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-6 focus:ring-2 focus:ring-blue-600"
                             />
                           ) : (
-                            <>
-                              <CustomButton
-                                text="Paid"
-                                disabled={true}
-                                variant={BUTTON_VARIANTS.OUTLINE}
-                                fullWidth={false}
-                                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-6 focus:ring-2 focus:ring-blue-600"
-                              />
-                            </>
+                            appointment.payment &&
+                            !appointment.isCompleted && (
+                              <>
+                                <CustomButton
+                                  text="Paid"
+                                  disabled={true}
+                                  variant={BUTTON_VARIANTS.OUTLINE}
+                                  fullWidth={false}
+                                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-6 focus:ring-2 focus:ring-blue-600"
+                                />
+                              </>
+                            )
                           )}
                         </>
+                      ) : (
+                        appointment.isCompleted && (
+                          <CustomButton
+                            text="Completed"
+                            disabled={true}
+                            variant={BUTTON_VARIANTS.OUTLINE}
+                            fullWidth={false}
+                            className="border-2 border-green-400 text-green-500 cursor-not-allowed px-6"
+                          />
+                        )
                       )}
                     </div>
                   </div>
