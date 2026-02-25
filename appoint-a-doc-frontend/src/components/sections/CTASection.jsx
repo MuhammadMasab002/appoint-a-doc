@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
+import { AppContext } from "../../services/context/AppContext";
 
 const CTASection = () => {
   const navigate = useNavigate();
+  const { token } = useContext(AppContext);
   return (
     <section className="w-full mt-6">
-      <div className="relative bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl">
+      <div className="relative bg-linear-to-r from-blue-500 to-blue-600 rounded-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between py-10 lg:py-0 gap-8 relative">
             {/* Left Content */}
@@ -18,15 +20,27 @@ const CTASection = () => {
               </h2>
 
               {/* CTA Button */}
-              <button
-                onClick={() => {
-                  navigate("/signup");
-                  scrollTo(0, 0);
-                }}
-                className="inline-block bg-white text-blue-600 text-sm md:text-base px-8 py-3 rounded-full cursor-pointer font-semibold hover:bg-gray-100 transition-colors duration-300 mt-2"
-              >
-                Create Account
-              </button>
+              {token ? (
+                <button
+                  onClick={() => {
+                    navigate("/doctors");
+                    scrollTo(0, 0);
+                  }}
+                  className="inline-block bg-white text-blue-600 text-sm md:text-base px-8 py-3 rounded-full cursor-pointer font-semibold hover:bg-gray-100 transition-colors duration-300 mt-2"
+                >
+                  Book Appointment
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    navigate("/signup");
+                    scrollTo(0, 0);
+                  }}
+                  className="inline-block bg-white text-blue-600 text-sm md:text-base px-8 py-3 rounded-full cursor-pointer font-semibold hover:bg-gray-100 transition-colors duration-300 mt-2"
+                >
+                  Create Account
+                </button>
+              )}
             </div>
 
             {/* Right Image */}

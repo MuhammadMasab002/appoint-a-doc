@@ -17,7 +17,6 @@ import { AppContext } from "../../services/context/AppContext";
 const Header = () => {
   const { token, setToken, userData } = useContext(AppContext);
 
-  const [search, setSearch] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -66,7 +65,6 @@ const Header = () => {
                 className="text-xl font-bold text-gray-900 hover:text-primary transition"
               >
                 <img className="w-40 h-auto" src={assets.logo} alt="Logo" />
-                {/* Logo<span className="text-primary">here</span> */}
               </Link>
             </div>
 
@@ -79,7 +77,7 @@ const Header = () => {
                     to={item.path}
                     end
                     className={({ isActive }) =>
-                      `text-sm font-medium transition
+                      `font-medium transition
                     ${
                       isActive
                         ? "text-primary"
@@ -95,23 +93,6 @@ const Header = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-4">
-              {/* Search Desktop */}
-              <div className="hidden md:block w-64">
-                <CustomFormInput
-                  placeholder="Search here..."
-                  name="search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  type={INPUT_TYPES.SEARCH}
-                  leftIcon={<SearchIcon fontSize="small" />}
-                />
-              </div>
-
-              {/* Search Mobile */}
-              <button className="md:hidden p-2 rounded-full hover:bg-gray-100">
-                <SearchIcon />
-              </button>
-
               {token && user ? (
                 <div ref={dropdownRef} className="relative">
                   <button

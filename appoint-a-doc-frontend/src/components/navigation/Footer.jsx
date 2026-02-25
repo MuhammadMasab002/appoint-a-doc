@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import XIcon from "@mui/icons-material/X";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { assets } from "../../assets/assets";
+import { AppContext } from "../../services/context/AppContext";
 
 const Footer = () => {
+  const { token } = useContext(AppContext);
   return (
     <footer className="bg-black/10 text-black mt-10 pt-10 pb-6">
       <div className="max-w-7xl mx-auto px-5">
@@ -17,9 +19,9 @@ const Footer = () => {
                 <img className="w-40 h-auto" src={assets.logo} alt="Logo" />
               </Link>
             </h3>
-            <p className="text-gray-500 mt-4">Subscribe</p>
-            <p className="text-gray-500 text-sm mb-4">
-              lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            <p className="text-gray-500 text-sm my-4">
+              Welcome to AppointAdoc, your trusted partner in managing your
+              healthcare needs conveniently and efficiently.
             </p>
 
             <div className="flex">
@@ -37,14 +39,30 @@ const Footer = () => {
           <div>
             <h5 className="text-lg font-semibold mb-4">Account</h5>
             <ul className="space-y-2 text-gray-500 text-sm">
+              {token ? (
+                <>
+                  <li>
+                    <Link to="/my-profile">My Account</Link>
+                  </li>
+                  <li>
+                    <Link to="/my-appointments">My Appointments</Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link to="/login">Login</Link>
+                  </li>
+                  <li>
+                    <Link to="/signup"> Register</Link>
+                  </li>
+                </>
+              )}
               <li>
-                <Link to="/my-profile">My Account</Link>
+                <Link to="/contact">Contact</Link>
               </li>
               <li>
-                <Link to="/login">Login</Link>
-              </li>
-              <li>
-                <Link to="/signup"> Register</Link>
+                <Link to="/about">About</Link>
               </li>
             </ul>
           </div>
@@ -61,20 +79,15 @@ const Footer = () => {
               <li>
                 <Link to="/faqs">FAQ</Link>
               </li>
-              <li>
-                <Link to="/contact">Contact</Link>
-              </li>
-              <li>
-                <Link to="/about">About</Link>
-              </li>
             </ul>
           </div>
 
           <div>
-            <h5 className="text-lg font-semibold mb-4">Download App</h5>
+            {/* social links */}
+            <h5 className="text-lg font-semibold mb-4">Follow Us</h5>
             <p className="text-gray-500 text-sm mb-4">
-              Lorem ipsum rerum quaerat ullam ea quis consequuntur eaque quidem
-              nobis?
+              Stay connected with us on social media for the latest updates and
+              health tips.
             </p>
 
             {/* Social Icons */}
@@ -102,10 +115,22 @@ const Footer = () => {
         <div className="container mx-auto px-4 text-center">
           <p className="text-center text-gray-500 mt-10 pt-5 border-t border-gray-700 text-sm">
             © {new Date().getFullYear()}
-            <span className="font-medium">
+            <span className="font-medium hover:underline">
               <Link to="/"> AppointAdoc. </Link>
             </span>
             All Rights Reserved.
+          </p>
+          {/* made by */}
+          <p className="text-center text-gray-500 mt-2 text-sm">
+            Made with ❤️ by{" "}
+            <a
+              href="https://github.com/MuhammadMasab002"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              Masab Ashraf
+            </a>
           </p>
         </div>
       </div>
