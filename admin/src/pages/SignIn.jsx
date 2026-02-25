@@ -88,8 +88,7 @@ const SignIn = () => {
         if (data.success) {
           localStorage.setItem("adminToken", data.token);
           setAuthToken(data.token);
-          // navigate("/dashboard");
-          navigate("/");
+          navigate("/admin-dashboard");
         }
       } else {
         const { data } = await axios.post(`${backendUrl}/doctor/login`, {
@@ -100,8 +99,7 @@ const SignIn = () => {
         if (data.success) {
           localStorage.setItem("doctorToken", data.token);
           setDoctorToken(data.token);
-          // navigate("/dashboard");
-          navigate("/");
+          navigate("/doctor-dashboard");
         }
       }
     } catch (err) {

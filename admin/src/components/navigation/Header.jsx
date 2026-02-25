@@ -14,7 +14,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const { authToken, setAuthToken } = useContext(AdminContext);
-  const { doctorToken, setDoctorToken } = useContext(DoctorContext);
+  const { doctorToken, setDoctorToken, doctorData } = useContext(DoctorContext);
   // const user = null;
 
   const handleLogout = () => {
@@ -26,7 +26,7 @@ const Header = () => {
     doctorToken && setDoctorToken(null);
     doctorToken && localStorage.removeItem("doctorToken");
 
-    navigate("/login");
+    navigate("/");
   };
 
   return (
@@ -46,7 +46,13 @@ const Header = () => {
 
               {/* Logo */}
               <Link
-                to="/"
+                to={
+                  authToken
+                    ? "/admin-dashboard"
+                    : doctorToken
+                      ? "/doctor-dashboard"
+                      : "/"
+                }
                 className="text-xl font-bold text-gray-900 hover:text-primary transition"
               >
                 <img
@@ -62,6 +68,13 @@ const Header = () => {
                 </p>
               </button>
             </div>
+
+            {/* display doctor email if logged in as doctor */}
+            {doctorToken && (
+              <div className="w-full hidden md:flex flex-col items-end justify-center gap-1 px-4">
+                <p className="text-sm text-gray-700">{doctorData?.email}</p>
+              </div>
+            )}
 
             {/* Right Actions */}
             <div className="space-x-4">

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import { ADMIN_NAV_ITEMS, DOCTOR_NAV_ITEMS } from "../../constants/navigation";
 import { assets } from "../../assets/assets";
@@ -9,7 +9,7 @@ import { DoctorContext } from "../../services/context/DoctorContext";
 
 const Sidebar = ({ isOpen = false, onClose, variant = "mobile" }) => {
   const { authToken } = useContext(AdminContext);
-  const { doctorToken } = useContext(DoctorContext);
+  const { doctorToken, doctorData } = useContext(DoctorContext);
 
   const isDesktop = variant === "desktop";
   const isVisible = isDesktop ? true : isOpen;
@@ -37,7 +37,7 @@ const Sidebar = ({ isOpen = false, onClose, variant = "mobile" }) => {
       >
         {/* Header */}
         {!isDesktop && (
-          <div className="flex items-center justify-between px-4 h-16 border-b sticky top-0 bg-white">
+          <div className="flex items-center justify-between px-4 h-16 border-b z-10 sticky top-0 bg-white">
             {/* <Link to="/" onClick={onClose}> */}
             <div className="w-40 h-10">
               <img
@@ -99,6 +99,14 @@ const Sidebar = ({ isOpen = false, onClose, variant = "mobile" }) => {
             ))}
           </nav>
         )}
+
+        <div className="h-3/5 flex items-end pb-2 lg:hidden">
+          {doctorToken && (
+            <div className="w-full py-2 px-4 flex flex-col items-start justify-center gap-1">
+              <p className="text-sm text-gray-700">{doctorData?.email}</p>
+            </div>
+          )}
+        </div>
       </aside>
     </>
   );

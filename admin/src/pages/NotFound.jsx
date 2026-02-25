@@ -55,7 +55,7 @@ const NotFound = () => {
                 ? "/admin-dashboard"
                 : doctorToken
                   ? "/doctor-dashboard"
-                  : "/login",
+                  : "/",
             )
           }
         />
