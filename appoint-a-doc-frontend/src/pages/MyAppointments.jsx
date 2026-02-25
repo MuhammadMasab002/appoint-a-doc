@@ -182,6 +182,12 @@ const MyAppointments = () => {
     }
   };
 
+  if (!token) {
+    toast.warn("Please login to view your profile");
+    navigate("/login");
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">

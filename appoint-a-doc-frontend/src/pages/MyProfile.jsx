@@ -14,8 +14,10 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { AppContext } from "../services/context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const MyProfile = () => {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -143,6 +145,12 @@ const MyProfile = () => {
     setSelectedImageFile(null);
     setIsEditing(false);
   };
+
+  if (!token) {
+    toast.warn("Please login to view your profile");
+    navigate("/login");
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-blue-50 py-8 sm:px-6 lg:px-8">
