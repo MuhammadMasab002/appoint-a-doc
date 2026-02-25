@@ -10,6 +10,7 @@ import Appointment from "./pages/Appointment";
 import MyProfile from "./pages/MyProfile";
 import MyAppointments from "./pages/MyAppointments";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import { ToastContainer } from "react-toastify";
 
 const GuestOnlyRoute = ({ children }) => {
@@ -50,6 +51,7 @@ function App() {
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/my-appointments" element={<MyAppointments />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
           <Route
             path="/login"

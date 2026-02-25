@@ -10,7 +10,7 @@ import axios from "axios";
 const Appointment = () => {
   const { doc_id } = useParams();
   const navigate = useNavigate();
-  const { doctors, currencySymbol, backendUrl, token, getAllDoctors } =
+  const { doctors, backendUrl, token, getAllDoctors } =
     useContext(AppContext);
 
   // Initialize selectedDate with today's date

@@ -18,18 +18,18 @@ function About() {
 
           <div className="text-gray-600 space-y-6 leading-8 text-base">
             <p>
-              Welcome to Appoint A Doc, your trusted partner in managing your
+              Welcome to AppointAdoc, your trusted partner in managing your
               healthcare needs conveniently and efficiently. At Appoint A Doc,
               we understand the challenges individuals face when it comes to
               scheduling doctor appointments and managing their health records.
             </p>
 
             <p>
-              Appoint A Doc is committed to excellence in healthcare technology.
+              AppointAdoc is committed to excellence in healthcare technology.
               We continuously strive to enhance our platform, integrating the
               latest advancements to improve user experience and deliver
               superior service. Whether you&apos;re booking your first
-              appointment or managing ongoing care, Appoint A Doc is here to
+              appointment or managing ongoing care, AppointAdoc is here to
               support you every step of the way.
             </p>
 
@@ -38,7 +38,7 @@ function About() {
                 Our Vision
               </h2>
               <p>
-                Our vision at Appoint A Doc is to create a seamless healthcare
+                Our vision at AppointAdoc is to create a seamless healthcare
                 experience for every user. We aim to bridge the gap between
                 patients and healthcare providers, making it easier for you to
                 access the care you need, when you need it.
