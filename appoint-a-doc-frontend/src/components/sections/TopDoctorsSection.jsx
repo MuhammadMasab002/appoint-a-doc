@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { AppContext } from "../../services/context/AppContext";
 
-const TopDoctorsSection = ({ doctors }) => {
+const TopDoctorsSection = () => {
   const navigate = useNavigate();
+  const { doctors } = useContext(AppContext);
 
   return (
     <section id="TopDoctorsSection" className="w-full py-14 md:py-16">
@@ -40,10 +42,21 @@ const TopDoctorsSection = ({ doctors }) => {
                   <div className="p-4">
                     {/* Available Badge */}
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-green-600 text-sm font-medium">
-                        Available
-                      </span>
+                      {doctor?.availability ? (
+                        <>
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-green-600 text-sm font-medium">
+                            Available
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <span className="text-red-600 text-sm font-medium">
+                            Not Available
+                          </span>
+                        </>
+                      )}
                     </div>
 
                     {/* Doctor Name */}

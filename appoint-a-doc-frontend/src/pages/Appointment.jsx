@@ -155,11 +155,28 @@ const Appointment = () => {
 
             {/* Doctor Info */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-3">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {doctor.name}
-                </h1>
-                <span className="text-blue-600 text-2xl">✓</span>
+              <div className="flex flex-colsm:flex-row sm:items-center justify-between gap-6 mb-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {doctor.name}
+                  </h1>
+                  <span className="text-blue-600 text-2xl">✓</span>
+                </div>
+                {doctor?.availability ? (
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-green-600 text-sm font-medium sm:inline-block hidden">
+                      Available
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span className="text-red-600 text-sm font-medium sm:inline-block hidden">
+                      Not Available
+                    </span>
+                  </div>
+                )}
               </div>
 
               <p className="text-lg text-gray-600 mb-2">{doctor.speciality}</p>
@@ -323,10 +340,21 @@ const Appointment = () => {
                     <div className="p-4">
                       {/* Available Badge */}
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-green-600 text-sm font-medium">
-                          Available
-                        </span>
+                        {doctor?.availability ? (
+                          <>
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-green-600 text-sm font-medium">
+                              Available
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                            <span className="text-red-600 text-sm font-medium">
+                              Not Available
+                            </span>
+                          </>
+                        )}
                       </div>
 
                       {/* Doctor Name */}

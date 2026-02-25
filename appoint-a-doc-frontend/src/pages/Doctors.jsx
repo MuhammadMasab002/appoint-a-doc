@@ -83,12 +83,21 @@ const Doctors = () => {
                     {/* Doctor Info */}
                     <div className="p-4">
                       {/* Available Status */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-green-600">
-                          Available
-                        </span>
-                      </div>
+                      {doctor?.availability ? (
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-green-600 text-sm font-medium">
+                            Available
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <span className="text-red-600 text-sm font-medium">
+                            Not Available
+                          </span>
+                        </div>
+                      )}
 
                       {/* Doctor Name */}
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
