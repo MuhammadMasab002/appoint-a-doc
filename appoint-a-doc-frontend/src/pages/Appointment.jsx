@@ -10,8 +10,7 @@ import axios from "axios";
 const Appointment = () => {
   const { doc_id } = useParams();
   const navigate = useNavigate();
-  const { doctors, backendUrl, token, getAllDoctors } =
-    useContext(AppContext);
+  const { doctors, backendUrl, token, getAllDoctors } = useContext(AppContext);
 
   // Initialize selectedDate with today's date
   const getTodayDate = () => {
@@ -340,7 +339,7 @@ const Appointment = () => {
                     <div className="p-4">
                       {/* Available Badge */}
                       <div className="flex items-center gap-2 mb-3">
-                        {doctor?.availability ? (
+                        {relatedDoctor?.availability ? (
                           <>
                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                             <span className="text-green-600 text-sm font-medium">
