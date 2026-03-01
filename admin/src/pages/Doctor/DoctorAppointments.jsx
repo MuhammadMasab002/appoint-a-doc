@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { useEffect } from "react";
 import { AppContext } from "../../services/context/AppContext";
 import { assets } from "../../assets/assets";
+import PersonIcon from "@mui/icons-material/Person";
 
 const DoctorAppointments = () => {
   const {
@@ -62,11 +63,20 @@ const DoctorAppointments = () => {
 
                 {/* Patient */}
                 <div className="flex items-center gap-3">
-                  <img
-                    src={appointment.userData.profilePicture}
-                    alt={appointment.userData.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+                  {appointment.userData.profilePicture ? (
+                    <img
+                      src={appointment.userData.profilePicture}
+                      alt={appointment.userData.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
+                      <PersonIcon
+                        className="text-indigo-400"
+                        style={{ fontSize: 30 }}
+                      />
+                    </div>
+                  )}
                   <span className="text-gray-800">
                     {appointment.userData.name}
                   </span>

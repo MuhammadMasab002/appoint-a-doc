@@ -12,7 +12,7 @@ const Dashboard = () => {
     if (authToken) {
       getDashboardData();
     }
-  }, [authToken, dashboardData]);
+  }, [authToken]);
 
   // handle cancel appointment
   const handleCancelAppointment = async (appointmentId) => {

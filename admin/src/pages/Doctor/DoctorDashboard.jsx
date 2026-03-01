@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { DoctorContext } from "../../services/context/DoctorContext";
 import { assets } from "../../assets/assets";
+import PersonIcon from "@mui/icons-material/Person";
 
 const DoctorDashboard = () => {
   const {
@@ -15,7 +16,7 @@ const DoctorDashboard = () => {
     if (doctorToken) {
       getDoctorDashboardData();
     }
-  }, [doctorToken, dashboardData]);
+  }, [doctorToken]);
 
   const latestAppointments = dashboardData?.latestAppointments || [];
 
@@ -101,11 +102,20 @@ const DoctorDashboard = () => {
               className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 rounded px-2 transition"
             >
               <div className="flex items-center gap-3">
-                <img
-                  src={appointment.userData.profilePicture}
-                  alt={appointment.userData.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
+                {appointment.userData?.profilePicture ? (
+                  <img
+                    src={appointment.userData.profilePicture}
+                    alt={appointment.userData.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
+                    <PersonIcon
+                      className="text-indigo-400"
+                      style={{ fontSize: 30 }}
+                    />
+                  </div>
+                )}
                 <div>
                   <p className="text-sm font-medium text-gray-800">
                     {appointment.userData.name}
