@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
@@ -19,16 +19,23 @@ import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
 function App() {
   const { authToken } = useContext(AdminContext);
   const { doctorToken } = useContext(DoctorContext);
+  const isAuthenticated = Boolean(authToken || doctorToken);
 
   return (
     <>
       <ScrollToTop />
       <Routes>
-        {/* If authToken exists, user is logged in, else show login page
-        This is a simple client-side check. In a real app, you should also verify the token's validity with the backend. */}
-        {authToken || doctorToken ? (
+        {isAuthenticated ? (
           <Route element={<MainLayout />}>
-            <Route path="/" element={<></>} />
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to={authToken ? "/admin-dashboard" : "/doctor-dashboard"}
+                  replace
+                />
+              }
+            />
             {/* Admin routes */}
             {authToken && (
               <>
@@ -54,7 +61,10 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         ) : (
-          <Route path="/" element={<SignIn />} />
+          <>
+            <Route path="/" element={<SignIn />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
         )}
         <Route path="*" element={<NotFound />} />
       </Routes>
