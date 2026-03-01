@@ -133,7 +133,7 @@ const MyProfile = () => {
       console.error("Error updating user profile: ", error);
       toast.error(
         error.response?.data?.error ||
-          error.message ||
+          error.response?.data?.message ||
           "Failed to update profile. Please try again.",
       );
     }

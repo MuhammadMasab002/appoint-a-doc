@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import CustomFormInput, { INPUT_TYPES } from "../common/inputs/CustomFormInput";
 
-import SearchIcon from "@mui/icons-material/Search";
+import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
@@ -99,11 +98,20 @@ const Header = () => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="p-1 rounded-full bg-gray-100 hover:bg-primary/10 transition border border-transparent hover:border-blue-500 cursor-pointer"
                   >
-                    <img
-                      className="w-9 h-9 rounded-full"
-                      src={user?.profilePicture || assets.profile_pic}
-                      alt="profile pic"
-                    />
+                    {user?.profilePicture ? (
+                      <img
+                        className="w-9 h-9 rounded-full"
+                        src={user?.profilePicture || assets.profile_pic}
+                        alt="profile pic"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-linear-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
+                        <PersonIcon
+                          className="text-indigo-400"
+                          style={{ fontSize: 30 }}
+                        />
+                      </div>
+                    )}
                   </button>
 
                   {/* Dropdown Menu */}
