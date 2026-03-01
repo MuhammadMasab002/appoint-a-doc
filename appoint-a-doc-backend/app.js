@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectCloudinary from "./src/config/cloudinary.js";
+import connectDB from "./src/config/db.js";
 import adminRoutes from "./src/routes/admin.route.js";
 import doctorRouter from "./src/routes/doctor.route.js";
 import userRouter from "./src/routes/user.route.js";
@@ -13,6 +14,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Connect DB once
+connectDB();
 
 // connect to cloudinary
 connectCloudinary();
