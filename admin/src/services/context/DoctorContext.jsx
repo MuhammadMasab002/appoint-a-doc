@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export const DoctorContext = createContext();
@@ -122,7 +122,7 @@ const DoctorContextProvider = ({ children }) => {
   };
 
   // get doctor profile data
-  const getDoctorProfileData = async () => {
+  const getDoctorProfileData = useCallback(async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/doctor/profile`, {
         headers: {
@@ -143,7 +143,7 @@ const DoctorContextProvider = ({ children }) => {
           "Failed to fetch doctor profile",
       );
     }
-  };
+  }, [backendUrl, doctorToken]);
 
   // update doctor profile data
   const updateDoctorProfileData = async (updatedData) => {
@@ -176,6 +176,12 @@ const DoctorContextProvider = ({ children }) => {
       return false;
     }
   };
+
+  useEffect(() => {
+    if (doctorToken) {
+      getDoctorProfileData();
+    }
+  }, [doctorToken]);
 
   const value = {
     doctorToken,
